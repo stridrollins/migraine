@@ -101,7 +101,7 @@ class Course:
                 self.results.append(
                     (
                         len(self.results) + 1,
-                        runner.name,
+                        runner,
                         self.time
                     )
                 )
@@ -141,9 +141,11 @@ class Course:
         if runner.hp > 0:
             normal_speed = DEFAULT_SPEED + runner.speed/800
             sprint_speed = DEFAULT_SPRINT_SPEED+runner.speed/1000
+            
         else :
             normal_speed = DEFAULT_DEAD_SPEED + runner.speed/1000
             sprint_speed = normal_speed
+
 
         # Accélération dépendante du power
         acceleration = DEFAULT_ACCEL * runner.power / 1000
@@ -170,15 +172,18 @@ class Course:
                 runner.current_speed,
                 sprint_speed
             )
-            return runner.current_speed
 
-        runner.current_speed = normal_speed
+          
+        else :
+            runner.current_speed = normal_speed
+
+        runner.hp -= runner.current_speed / 1000
         return runner.current_speed
 
 
 s = Runner("Strid",1200,1200,850)
 l = Runner("Lilith",1320,950,620)
-
+c = Runner("Chameau",1950,700,899)
 
 
 tokyo = TrackBuilder().build(tokyo_2400)
@@ -200,27 +205,27 @@ print(nakayama_2000.length)
 Japanesederby = Course(
     tokyo_2400,
     "b",
-    [s,l]
+    [s,l,c]
 )
 
 
 Satsukisho = Course(
     nakayama_2000,
     "b",
-    [s,l]
+    [s,l,c]
 )
 
 
 Kikukasho = Course(
     kyoto_3000,
     "b",
-    [s,l]
+    [s,l,c]
 )
 
 Takarazukakinen = Course(
     hanshin_2200,
     "b",
-    [s,l]
+    [s,l,c]
 )
 
 
