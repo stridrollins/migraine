@@ -4,22 +4,14 @@ DEFAULT_SPRINT_SPEED = 70 # km/h
 
 DEFAULT_ACCEL = 1     # km/h par seconde
 
-
-
-from runner import Runner
-from visualizer import TrackVisualizer
 import time
 
-from tracklist import tokyo_2400,nakayama_2000,kyoto_3000,hanshin_2200
-from trackbuilder import (
-    Circuit,
-    TrackBuilder,
-    Straight,
-    Arc,
-    Slope,
-    STEP
-)
+from runner import *
+from visualizer import *
 
+
+from tracklist import *
+from trackbuilder import *
 
 class Course:
     def __init__(self,circuit,conditions,runners):
@@ -144,8 +136,8 @@ class Course:
     def calculate_speed(self, runner, dt):
 
         if runner.hp > 0:
-            normal_speed = DEFAULT_SPEED + runner.speed / 800
-            sprint_speed = DEFAULT_SPRINT_SPEED + runner.speed / 1000
+            normal_speed = (DEFAULT_SPEED *0.9 + (runner.speed/20)*0.1  ) 
+            sprint_speed = (DEFAULT_SPRINT_SPEED * 0.5 + runner.speed/20 * 0.5)
         else:
             normal_speed = DEFAULT_DEAD_SPEED + runner.speed / 1000
             sprint_speed = normal_speed
@@ -176,43 +168,6 @@ class Course:
         )
 
         return runner.current_speed
-#Speed/Power/Stamina
-s = Runner("Strid",1500,1300,1100)
-l = Runner("Lilith",2100,1900,725)
-c = Runner("Chameau",1850,1200,950)
-b = Runner("Berserk",1850,1500,850)
-
-Japanesederby = Course(
-    tokyo_2400,
-    "b",
-    [s,l,c,b]
-)
-
-Satsukisho = Course(
-    nakayama_2000,
-    "b",
-    [s,l,c,b]
-)
-
-Kikukasho = Course(
-    kyoto_3000,
-    "b",
-    [s,l,c,b]
-)
-
-Takarazukakinen = Course(
-    hanshin_2200,
-    "b",
-    [s,l,c,b]
-)
-
-courses = [Satsukisho,Japanesederby,Kikukasho,Takarazukakinen]
-
-
-course = courses[3]
-
-
-
 
 
 
@@ -221,7 +176,7 @@ def game_loop():
     if course.finished:
         print("Course terminée")
         return
-    for _ in range(2): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
+    for _ in range(15): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
 
         course.step(1/60)
 
@@ -231,18 +186,64 @@ def game_loop():
     )
 
 
-visualizer = TrackVisualizer(course)
-
-game_loop()
 
 
+def create_runners():
+    return [
+        Runner("Strid",1450,1200,1100),
+        Runner("Lilith",1600,1500,680),
+        Runner("Chameau",1550,1200,885),
+        Runner("Berserk",1490,1400,850)
+    ]
+    
+def create_courses():
+
+    return [
+        Course(
+            nakayama_2000,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            tokyo_2400,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            kyoto_3000,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            hanshin_2200,
+            "b",
+            create_runners()
+        )
+    ]
 
 
 
 
 
-visualizer.start()
+while True:
 
-#print("Results:")
-#for position, runner in enumerate(c.results, start=1):
-#    print(f"{position}. {runner}")
+    courses = create_courses()
+    selector = CourseSelector(courses)
+
+
+    selector.start()
+
+    course = selector.selected
+
+    if course is None:
+        break
+
+        
+    visualizer = TrackVisualizer(course)
+    game_loop()
+    visualizer.start()
+
+

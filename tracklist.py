@@ -3,7 +3,9 @@ from trackbuilder import *
 
 
 nakayama_2000 = Circuit(
-    name="Nakayama 2000m",
+    
+    name="Satsuki Sho",
+    track="Nakayama 2000m",
     geometry=[
 
         Straight(124),
@@ -48,9 +50,9 @@ nakayama_2000 = Circuit(
         Straight(250)
     ]
 )
-
 tokyo_2400 = Circuit(
-    name="Tokyo 2400m",
+    track="Tokyo 2400m",
+    name="Japanese Derby",
     geometry=[
 
         # ligne droite avant le premier virage
@@ -83,9 +85,9 @@ tokyo_2400 = Circuit(
         Straight(280)
     ]
 )
-
 kyoto_3000 = Circuit(
-    name="Kyoto 3000m",
+    name="Kikuka Sho",
+    track="Kyoto 3000m",
     geometry=[
 
         Straight(106),
@@ -108,7 +110,8 @@ kyoto_3000 = Circuit(
     ]
 )
 hanshin_2200 = Circuit(
-    name="Hanshin 2200m",
+    name="Takarazuka Kinen",
+    track="Hanshin 2200m",
     geometry=[
 
         Straight(360),
@@ -124,6 +127,7 @@ hanshin_2200 = Circuit(
         Straight(290)
     ]
 )
+
 
 
 if __name__ == "__main__":

@@ -1,7 +1,11 @@
-FROM python:3.12
+FROM python:3.14-slim
 
 WORKDIR /app
 
-COPY  . .
+COPY . .
+
+RUN apt-get update && apt-get install -y \
+    python3-tk \
+    && rm -rf /var/lib/apt/lists/*
 
 CMD ["python", "moteurdecourse.py"]

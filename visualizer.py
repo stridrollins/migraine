@@ -7,6 +7,91 @@ HEIGHT = 700
 
 
 
+import tkinter as tk
+
+
+class CourseSelector:
+
+    def __init__(self, courses):
+        self.courses = courses
+        self.selected = None
+
+        self.root = tk.Tk()
+        self.root.title("Course Selector")
+        self.root.geometry("1080x780")
+
+        self.frames = []
+
+        for i in range(2):
+            self.root.grid_rowconfigure(i, weight=1)
+            self.root.grid_columnconfigure(i, weight=1)
+
+        for i, course in enumerate(courses):
+            self.initframe(i, course)
+
+
+    def initframe(self, i, course):
+
+        frame = tk.Frame(
+            self.root,
+         
+            bg="gray20",
+            bd=2,
+            relief="solid"
+        )
+
+        frame.grid(
+            row=i // 2,
+            column=i % 2,
+            padx=30,
+            pady=30,
+            sticky="nsew"
+        )
+
+        frame.grid_propagate(False)
+
+
+        label = tk.Label(
+            frame,
+            text=(
+                f"{course.circuit.name}\n"
+                f"{course.circuit.track}\n"
+               
+            ),
+            font=("Arial", 16),
+            fg="white",
+            bg="gray20"
+        )
+
+        label.pack(expand=True)
+
+
+        # clic sur la carte
+        frame.bind(
+            "<Button-1>",
+            lambda event, c=course: self.select(c)
+        )
+
+        label.bind(
+            "<Button-1>",
+            lambda event, c=course: self.select(c)
+        )
+
+
+        self.frames.append(frame)
+
+
+    def select(self, course):
+
+        self.selected = course
+        self.root.destroy()
+
+
+    def start(self):
+
+        self.root.mainloop()
+
+
 
 
 
@@ -62,7 +147,18 @@ class TrackVisualizer:
         )
 
         self.canvas.pack()
+        self.return_button = tk.Button(
+            self.root,
+            text="Retour à la sélection",
+            font=("Arial", 14),
+            command=self.return_to_menu
+        )
 
+        self.return_button.pack(
+            pady=10
+        )
+
+        self.return_button.pack_forget()
 
         self.prepare_scale()
 
@@ -83,9 +179,9 @@ class TrackVisualizer:
         self.runner_texts = []
 
         colors = [
-            "red",
             "cyan",
-            "yellow",
+            "pink",
+            "orange",
             "green"
         ]
 
@@ -100,10 +196,6 @@ class TrackVisualizer:
             )
 
             self.runner_objects.append(obj)
-
-    
-
-
 
         # Classement pendant la course
         self.ranking_text = self.canvas.create_text(
@@ -127,8 +219,12 @@ class TrackVisualizer:
         )
 
 
-
-    
+        self.restart_button = tk.Button(
+                self.root,
+                text="Rejouer cette course",
+                command=self.restart
+            )
+                
 
 
         self.update()
@@ -228,10 +324,15 @@ class TrackVisualizer:
         self.update_ranking()
         self.update_results()
 
-        self.root.after(
-            16,
-            self.update
-        )
+        if self.course.finished:
+            self.return_button.pack(
+                pady=10
+            )
+        else:
+            self.root.after(
+                16,
+                self.update
+            )
 
     def update_ranking(self):
 
@@ -314,7 +415,23 @@ class TrackVisualizer:
             width=3
         )
 
+    def return_to_menu(self):
+        self.root.destroy()
 
     def start(self):
-
         self.root.mainloop()
+
+    def restart(self):
+        self.root.destroy()
+
+        new_course = Course(
+            self.course.circuit,
+            self.course.conditions,
+            create_runners()
+        )
+
+        visualizer = TrackVisualizer(new_course)
+        game_loop()
+        visualizer.start()
+
+        

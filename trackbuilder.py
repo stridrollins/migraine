@@ -29,6 +29,7 @@ Geometry = Straight | Arc | Slope
 @dataclass
 class Circuit:
     name: str
+    track:str
     geometry: list[Geometry]
     length: float = 0
 
