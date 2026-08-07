@@ -8,8 +8,12 @@ class Runner:
         self.stamina = stamina
         self.skills = []
         self.distance = 0
+        self.track_index =0
+        self.x =0
+        self.y =0
         self.finished = False
         self.current_speed = 0
+        self.hp  = self.stamina
 
     def update_skills(self, course, dt):
 

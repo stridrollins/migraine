@@ -1,9 +1,22 @@
 DEFAULT_SPEED = 60/3.6
-DEFAULT_ACCEL = 1/3.6
+DEFAULT_DEAD_SPEED = 50/3.6
 DEFAULT_SPRINT_SPEED = 70/3.6
+DEFAULT_ACCEL = 1/3.6
+
+
 from runner import Runner
-from circuit import Circuit, Segment
+from visualizer import TrackVisualizer
 import time
+
+from tracklist import tokyo_2400,nakayama_2000,kyoto_3000,hanshin_2200
+from trackbuilder import (
+    Circuit,
+    TrackBuilder,
+    Straight,
+    Arc,
+    Slope,
+    STEP
+)
 
 
 class Course:
@@ -15,7 +28,14 @@ class Course:
         self.y = 0
         self.time=0
         self.results =[]#result = tableau position,runner,temps
-
+        builder = TrackBuilder()
+        self.track=builder.build(circuit)
+        print(
+            "Circuit chargé :",
+            self.circuit.name,
+            self.circuit.length,
+            "m"
+        )
     def start(self):
         dt = 1 / 60  # 60 mises à jour par seconde
 
@@ -27,6 +47,14 @@ class Course:
 
             elapsed = time.perf_counter() - start
             time.sleep(max(0, dt - elapsed))
+
+
+    def step(self,dt):
+
+        self.update(dt)
+        self.checkfinish()
+
+
 
     def checkfinish(self):
         if len(self.results) == len(self.runners):
@@ -48,6 +76,22 @@ class Course:
 
             # Mise à jour de la distance
             runner.distance += current_speed * dt
+
+
+            runner.track_index = min(
+                int(runner.distance / STEP),
+                len(self.track) - 1
+            )
+
+            point = self.track[runner.track_index]
+
+            runner.x = point.x
+            runner.y = point.y
+
+
+
+
+
 
             # Vérification de l'arrivée
             if runner.distance >= self.circuit.length:
@@ -94,73 +138,108 @@ class Course:
     def calculate_speed(self, runner, dt):
 
         # Limites de vitesse
-        normal_speed = DEFAULT_SPEED + runner.speed/800
-        sprint_speed = DEFAULT_SPRINT_SPEED+runner.speed/1000
+        if runner.hp > 0:
+            normal_speed = DEFAULT_SPEED + runner.speed/800
+            sprint_speed = DEFAULT_SPRINT_SPEED+runner.speed/1000
+        else :
+            normal_speed = DEFAULT_DEAD_SPEED + runner.speed/1000
+            sprint_speed = normal_speed
 
         # Accélération dépendante du power
-        acceleration = DEFAULT_ACCEL * runner.power / 100
+        acceleration = DEFAULT_ACCEL * runner.power / 1000
 
 
         # Phase 1 : accélération de départ
         if runner.current_speed < normal_speed:
+            if runner.current_speed < 50: #accelere 10fois + vite de 0 a 50kmh
+                runner.current_speed += acceleration*10*dt
+            else:
+                runner.current_speed += acceleration * dt #accelere normalement apres
 
-            runner.current_speed += acceleration * dt
-
-            # limite vitesse normale
             runner.current_speed = min(
                 runner.current_speed,
                 normal_speed
             )
-
             return runner.current_speed
 
-
-        # Phase 2 : sprint final
         sprint_start = self.circuit.length * (2/3)
 
         if runner.distance >= sprint_start:
-
             runner.current_speed += acceleration * dt
-
-            # limite sprint
             runner.current_speed = min(
                 runner.current_speed,
                 sprint_speed
             )
-
             return runner.current_speed
 
-
-        # Phase 3 : vitesse stabilisée
         runner.current_speed = normal_speed
-
         return runner.current_speed
 
 
 s = Runner("Strid",1200,1200,850)
 l = Runner("Lilith",1320,950,620)
 
-nakayama_2000 = Circuit(
-    name="Nakayama 2000m",
-    location="Nakayama Racecourse",
-    length=2000
+
+
+tokyo = TrackBuilder().build(tokyo_2400)
+nakayama = TrackBuilder().build(nakayama_2000)
+hanshin = TrackBuilder().build(hanshin_2200)
+kyoto = TrackBuilder().build(kyoto_3000)
+print(kyoto_3000.length)
+print(tokyo_2400.length)
+print(hanshin_2200.length)
+print(nakayama_2000.length)
+
+
+
+
+
+
+
+
+Japanesederby = Course(
+    tokyo_2400,
+    "b",
+    [s,l]
 )
 
-nakayama_2000.segments = [
-    Segment(0, 180, "straight"),
-    Segment(180, 480, "turn", value=180),
-    Segment(480, 900, "straight"),
-    Segment(900, 1300, "turn", value=90),
-    Segment(1300, 1650, "uphill", value=2.2),
-    Segment(1650, 1690, "turn", value=90),
-    Segment(1690, 2000, "straight")
-]
+
+Satsukisho = Course(
+    nakayama_2000,
+    "b",
+    [s,l]
+)
 
 
-c = Course(nakayama_2000,"b",[s,l])
+Kikukasho = Course(
+    kyoto_3000,
+    "b",
+    [s,l]
+)
 
-c.start()
+Takarazukakinen = Course(
+    hanshin_2200,
+    "b",
+    [s,l]
+)
 
-print("Results:")
-for position, runner in enumerate(c.results, start=1):
-    print(f"{position}. {runner}")
+
+def game_loop():
+
+    Satsukisho.step(1/60)
+
+    visualizer.root.after(
+        16,
+        game_loop
+    )
+
+
+visualizer = TrackVisualizer(Satsukisho)
+
+game_loop()
+
+visualizer.start()
+
+#print("Results:")
+#for position, runner in enumerate(c.results, start=1):
+#    print(f"{position}. {runner}")
