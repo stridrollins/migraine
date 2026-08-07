@@ -6,6 +6,45 @@ WIDTH = 900
 HEIGHT = 700
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 class TrackVisualizer:
 
     def __init__(self, course):
@@ -40,7 +79,6 @@ class TrackVisualizer:
             "red"
         )
 
-
         self.runner_objects = []
         self.runner_texts = []
 
@@ -53,43 +91,45 @@ class TrackVisualizer:
 
         for i, runner in enumerate(course.runners):
 
-                obj = self.canvas.create_oval(
-                    0,
-                    0,
-                    10,
-                    10,
-                    fill=colors[i % len(colors)]
-                )
+            obj = self.canvas.create_oval(
+                0,
+                0,
+                10,
+                10,
+                fill=colors[i % len(colors)]
+            )
 
-                self.runner_objects.append(obj)
+            self.runner_objects.append(obj)
 
-                text = self.canvas.create_text(
-                    WIDTH // 2,
-                    HEIGHT - 40 + i * 20,
-                    anchor="w",
-                    fill=colors[i % len(colors)],
-                    font=("Arial", 12),
-                    text=""
-                )
+    
 
-                self.runner_texts.append(text)
 
-                self.ranking_text = self.canvas.create_text(
-                    20,
-                    HEIGHT-250,
-                    anchor="nw",
-                    fill="white",
-                    font=("Courier", 12),
-                    text=""
-                )
-                self.results_text = self.canvas.create_text(
-                    20,
-                    HEIGHT - 120,
-                    anchor="nw",
-                    fill="lime",
-                    font=("Courier", 12),
-                    text=""
-                )
+
+        # Classement pendant la course
+        self.ranking_text = self.canvas.create_text(
+            20,
+            HEIGHT - 250,
+            anchor="nw",
+            fill="white",
+            font=("Courier", 12),
+            text=""
+        )
+
+
+        # Résultats finaux
+        self.results_text = self.canvas.create_text(
+            WIDTH - 250,
+            20,
+            anchor="nw",
+            fill="lime",
+            font=("Courier", 12),
+            text=""
+        )
+
+
+
+    
+
 
         self.update()
 
@@ -161,70 +201,80 @@ class TrackVisualizer:
         )
 
 
-
     def update(self):
 
-        for obj, text, runner in zip(
+        for obj, runner in zip(
             self.runner_objects,
-            self.runner_texts,
+         
             self.course.runners
         ):
 
-            y, x = self.transform(runner.x, runner.y)
+            y, x = self.transform(
+                runner.x,
+                runner.y
+            )
 
-            r = 4
             self.canvas.coords(
                 obj,
-                x-r, y-r,
-                x+r, y+r
+                x-4,
+                y-4,
+                x+4,
+                y+4
             )
 
-            ranking = sorted(
-                self.course.runners,
-                key=lambda r: r.distance,
-                reverse=True
+            
+
+
+        self.update_ranking()
+        self.update_results()
+
+        self.root.after(
+            16,
+            self.update
+        )
+
+    def update_ranking(self):
+
+        ranking = sorted(
+            self.course.runners,
+            key=lambda r: r.distance,
+            reverse=True
+        )
+
+        classement = (
+            f"Temps : {self.course.time:.2f}s\n"
+            "====================\n"
+        )
+
+        for position, runner in enumerate(ranking, start=1):
+
+            progress = (
+                runner.distance /
+                self.course.circuit.length
+            ) * 100
+
+            classement += (
+                f"{position}. "
+                f"{runner.name:<10} "
+                f"{runner.distance:7.1f}m "
+                f"({progress:5.1f}%) "
+                f"{runner.current_speed:5.1f} km/h "
+                f"{runner.hp:.0f} HP\n"
             )
 
-            classement = (
-                f"Temps : {self.course.time:.2f}s\n"
-                "====================\n"
-            )
+        self.canvas.itemconfig(
+            self.ranking_text,
+            text=classement
+        )
 
-            for position, runner in enumerate(ranking, start=1):
+    def update_results(self):
 
-                progress = (
-                    runner.distance / self.course.circuit.length
-                ) * 100
-
-                classement += (
-                    f"{position}. "
-                    f"{runner.name:<10} "
-                    f"{runner.distance:7.1f}m "
-                    f"({progress:5.1f}%) "
-                    f"{runner.current_speed*3.6:5.1f} km/h\n"
-                )
-
-
-            self.canvas.itemconfig(
-                self.ranking_text,
-                text=classement
-            )
-        if self.course.finished:
-            self.show_results()
+        if not self.course.results:
             return
 
-        self.root.after(16, self.update)
-
-
-
-
-
-
-    def show_results(self):
-
         texte = (
-            "RESULTATS FINAUX\n"
-            "====================\n"
+            "ARRIVEES\n"
+            "================\n"
         )
 
         for position, runner, temps in self.course.results:
@@ -233,14 +283,14 @@ class TrackVisualizer:
                 f"{position}. "
                 f"{runner.name:<10} "
                 f"{temps:6.2f}s\n"
+            
+                
             )
 
         self.canvas.itemconfig(
             self.results_text,
             text=texte
         )
-
-
 
 
 

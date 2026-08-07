@@ -1,7 +1,9 @@
-DEFAULT_SPEED = 60/3.6
-DEFAULT_DEAD_SPEED = 50/3.6
-DEFAULT_SPRINT_SPEED = 70/3.6
-DEFAULT_ACCEL = 1/3.6
+DEFAULT_SPEED = 60     # km/h
+DEFAULT_DEAD_SPEED = 50 # km/h
+DEFAULT_SPRINT_SPEED = 70 # km/h
+
+DEFAULT_ACCEL = 1     # km/h par seconde
+
 
 
 from runner import Runner
@@ -74,8 +76,12 @@ class Course:
             current_speed = self.calculate_speed(runner, dt)
 
 
-            # Mise à jour de la distance
-            runner.distance += current_speed * dt
+          
+
+            speed_ms = current_speed / 3.6
+
+            runner.distance += speed_ms * dt
+
 
 
             runner.track_index = min(
@@ -129,109 +135,95 @@ class Course:
                     f"{runner.name:<10} "
                     f"{runner.distance:7.1f}m "
                     f"({progress:5.1f}%)"
-                    f"({runner.current_speed*3.6:5.1f})"
+                    f"({runner.current_speed:5.1f})"
                 )
-
-
         self.y += 1
+
+
 
     def calculate_speed(self, runner, dt):
 
-        # Limites de vitesse
         if runner.hp > 0:
-            normal_speed = DEFAULT_SPEED + runner.speed/800
-            sprint_speed = DEFAULT_SPRINT_SPEED+runner.speed/1000
-            
-        else :
-            normal_speed = DEFAULT_DEAD_SPEED + runner.speed/1000
+            normal_speed = DEFAULT_SPEED + runner.speed / 800
+            sprint_speed = DEFAULT_SPRINT_SPEED + runner.speed / 1000
+        else:
+            normal_speed = DEFAULT_DEAD_SPEED + runner.speed / 1000
             sprint_speed = normal_speed
 
-
-        # Accélération dépendante du power
         acceleration = DEFAULT_ACCEL * runner.power / 1000
 
+        target_speed = normal_speed
 
-        # Phase 1 : accélération de départ
-        if runner.current_speed < normal_speed:
-            if runner.current_speed < 50: #accelere 10fois + vite de 0 a 50kmh
-                runner.current_speed += acceleration*10*dt
-            else:
-                runner.current_speed += acceleration * dt #accelere normalement apres
+        if runner.distance >= self.circuit.length * 2 / 3 and runner.hp > 0:
+            target_speed = sprint_speed
 
+        if runner.current_speed < target_speed:
+            if runner.current_speed < 40:
+                runner.current_speed += acceleration*5*dt
             runner.current_speed = min(
-                runner.current_speed,
-                normal_speed
+                runner.current_speed + acceleration * dt,
+                target_speed
             )
-            return runner.current_speed
-
-        sprint_start = self.circuit.length * (2/3)
-
-        if runner.distance >= sprint_start:
-            runner.current_speed += acceleration * dt
-            runner.current_speed = min(
-                runner.current_speed,
-                sprint_speed
+        else:
+            runner.current_speed = max(
+                runner.current_speed - acceleration * dt,
+                target_speed
             )
 
-          
-        else :
-            runner.current_speed = normal_speed
+        runner.hp = max(
+            0,
+            runner.hp - (runner.current_speed / 1200*120) * dt
+        )
 
-        runner.hp -= runner.current_speed / 1000
         return runner.current_speed
-
-
-s = Runner("Strid",1200,1200,850)
-l = Runner("Lilith",1320,950,620)
-c = Runner("Chameau",1950,700,899)
-
-
-tokyo = TrackBuilder().build(tokyo_2400)
-nakayama = TrackBuilder().build(nakayama_2000)
-hanshin = TrackBuilder().build(hanshin_2200)
-kyoto = TrackBuilder().build(kyoto_3000)
-print(kyoto_3000.length)
-print(tokyo_2400.length)
-print(hanshin_2200.length)
-print(nakayama_2000.length)
-
-
-
-
-
-
-
+#Speed/Power/Stamina
+s = Runner("Strid",1500,1300,1100)
+l = Runner("Lilith",2100,1900,725)
+c = Runner("Chameau",1850,1200,950)
+b = Runner("Berserk",1850,1500,850)
 
 Japanesederby = Course(
     tokyo_2400,
     "b",
-    [s,l,c]
+    [s,l,c,b]
 )
-
 
 Satsukisho = Course(
     nakayama_2000,
     "b",
-    [s,l,c]
+    [s,l,c,b]
 )
-
 
 Kikukasho = Course(
     kyoto_3000,
     "b",
-    [s,l,c]
+    [s,l,c,b]
 )
 
 Takarazukakinen = Course(
     hanshin_2200,
     "b",
-    [s,l,c]
+    [s,l,c,b]
 )
+
+courses = [Satsukisho,Japanesederby,Kikukasho,Takarazukakinen]
+
+
+course = courses[3]
+
+
+
+
+
 
 
 def game_loop():
+    if course.finished:
+        print("Course terminée")
+        return
+    for _ in range(2): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
 
-    Satsukisho.step(1/60)
+        course.step(1/60)
 
     visualizer.root.after(
         16,
@@ -239,9 +231,15 @@ def game_loop():
     )
 
 
-visualizer = TrackVisualizer(Satsukisho)
+visualizer = TrackVisualizer(course)
 
 game_loop()
+
+
+
+
+
+
 
 visualizer.start()
 
