@@ -336,11 +336,22 @@ class TrackVisualizer:
 
     def update_ranking(self):
 
-        ranking = sorted(
-            self.course.runners,
-            key=lambda r: r.distance,
-            reverse=True
-        )
+        if self.course.finished:
+
+            ranking = [
+                result[1]
+                for result in self.course.results
+            ]
+
+        else:
+
+
+
+            ranking = sorted(
+                self.course.runners,
+                key=lambda r: r.distance,
+                reverse=True
+            )
 
         classement = (
             f"Temps : {self.course.time:.2f}s\n"

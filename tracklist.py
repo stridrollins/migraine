@@ -1,5 +1,5 @@
 from trackbuilder import *
-
+from runner import *
 
 
 nakayama_2000 = Circuit(
@@ -13,7 +13,7 @@ nakayama_2000 = Circuit(
         Arc(
             radius=100,
             angle=180,
-            clockwise=False
+            clockwise=True
         ),
 
         Straight(280),
@@ -21,7 +21,7 @@ nakayama_2000 = Circuit(
         Arc(
             radius=100,
             angle=110,
-            clockwise=False
+            clockwise=True
         ),
 
         Slope(
@@ -31,7 +31,7 @@ nakayama_2000 = Circuit(
 
         Arc(radius=70,
             angle=80,
-            clockwise=False
+            clockwise=True
         ),
 
         # Ligne du fond (outer)
@@ -39,13 +39,13 @@ nakayama_2000 = Circuit(
 
         Arc(radius=120,
             angle=31,
-            clockwise=False
+            clockwise=True
         ),
         Straight(140),
 
         Arc(radius=100,
             angle =139,
-            clockwise=False),
+            clockwise=True),
 
         Straight(250)
     ]
@@ -94,16 +94,16 @@ kyoto_3000 = Circuit(
 
         Slope(100,1.5),
 
-        Arc(200,180,False),
+        Arc(200,180,True),
 
         Straight(330),
 
-        Arc(200,180,False),
+        Arc(200,180,True),
 
         Straight(230),
 
         Slope(100,1.5),
-        Arc(200,180,False),
+        Arc(200,180,True),
 
 
         Straight(250)
@@ -116,11 +116,11 @@ hanshin_2200 = Circuit(
 
         Straight(360),
 
-        Arc(172,195,False),
+        Arc(172,195,True),
 
         Straight(470),
 
-        Arc(110,165,False),
+        Arc(110,165,True),
 
         Slope(180,2.0),
 
@@ -128,6 +128,18 @@ hanshin_2200 = Circuit(
     ]
 )
 
+laumamusume2 = Circuit(
+    name="Lauma Musume Track N°2",
+    track = "Nod-Krai Teappot",
+    geometry = [
+        Straight(20),
+        Arc(100,100,False)
+
+
+
+
+    ]
+)
 
 
 if __name__ == "__main__":
@@ -135,7 +147,11 @@ if __name__ == "__main__":
     nakayama = TrackBuilder().build(nakayama_2000)
     hanshin = TrackBuilder().build(hanshin_2200)
     kyoto = TrackBuilder().build(kyoto_3000)
+    lauma = TrackBuilder().build(laumamusume2)
+
+
     print(kyoto_3000.length)
     print(tokyo_2400.length)
     print(hanshin_2200.length)
     print(nakayama_2000.length)
+    print(laumamusume2.length)

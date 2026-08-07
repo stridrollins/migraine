@@ -1,0 +1,78 @@
+from moteurdecourse import *
+
+
+
+    
+def create_courses():
+
+    return [
+        Course(
+            nakayama_2000,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            tokyo_2400,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            kyoto_3000,
+            "b",
+            create_runners()
+        ),
+
+        Course(
+            hanshin_2200,
+            "b",
+            create_runners()
+        )
+    ]
+
+
+def create_runners():
+    return [
+        Runner("Strid",1450,1250,1100),
+        Runner("Lilith",1600,1500,680),
+        Runner("Chameau",1550,1200,885),
+        Runner("Berserk",1490,1400,850)
+    ]
+
+def game_loop():
+    if course.finished:
+        print("Course terminée")
+        return
+    for _ in range(5): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
+
+        course.step(1/60)
+
+    visualizer.root.after(
+        16,
+        game_loop
+    )
+
+
+
+
+###PROGRAME PRINCIPAL
+
+while True:
+
+    courses = create_courses()
+    selector = CourseSelector(courses)
+
+
+    selector.start()
+
+    course = selector.selected
+
+    if course is None:
+        break
+
+        
+    visualizer = TrackVisualizer(course)
+    game_loop()
+    visualizer.start()
+

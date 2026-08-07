@@ -100,7 +100,7 @@ class TrackBuilder:
 
             elif isinstance(part, Arc):
 
-                direction = -1 if part.clockwise else 1
+                direction = 1 if part.clockwise else -1
 
                 arc = radians(part.angle)
 
