@@ -15,12 +15,11 @@ class Course:
         self.conditions=conditions
         self.runners=runners
         self.finished=False
-        self.y=0
+   
         self.time=0
         self.results=[]
         builder=TrackBuilder()
         self.track=builder.build(circuit)
-        print("Circuit chargé :",self.circuit.name,self.circuit.length,"m")
         
    
 
@@ -55,15 +54,7 @@ class Course:
 
         ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)
 
-        if self.y%60==0:
-            print("\n====================")
-            print(f"Temps : {self.time:.2f}s")
-            print("====================")
-            for position,runner in enumerate(ranking,start=1):
-                progress=(runner.distance/self.circuit.length)*100
-                print(f"{position}. {runner.name:<10} {runner.distance:7.1f}m ({progress:5.1f}%) ({runner.current_speed:5.1f})")
-
-        self.y+=1
+        
 
     def calculate_speed(self,runner,dt):
         acceleration=self._get_acceleration(runner)

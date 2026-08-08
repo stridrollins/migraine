@@ -90,23 +90,26 @@ kyoto_3000 = Circuit(
     track="Kyoto 3000m",
     geometry=[
 
-        Straight(106),
+        
 
-        Slope(100,1.5),
+        Slope(260,1.5),
 
-        Arc(200,180,True),
+        Arc(110,95,True),
+        Slope(120,-1.5),
+        Arc(110,100,True),
+        Straight(500),
 
-        Straight(330),
+        Arc(105,165,True),
 
-        Arc(200,180,True),
+        Straight(235),
+        Slope(260,1.5),
+       
+        Arc(110,95,True),
+        Slope(120,-1.5),
+        Arc(110,100,True),
+        Straight(460),
 
-        Straight(230),
 
-        Slope(100,1.5),
-        Arc(200,180,True),
-
-
-        Straight(250)
     ]
 )
 hanshin_2200 = Circuit(
@@ -114,15 +117,18 @@ hanshin_2200 = Circuit(
     track="Hanshin 2200m",
     geometry=[
 
-        Straight(360),
-
-        Arc(172,195,True),
-
-        Straight(470),
-
+        Slope(295,-1.0),
+        Slope(125,1.0),
+        Straight(100),
         Arc(110,165,True),
 
-        Slope(180,2.0),
+        Straight(350),
+        Arc(130,80,True),
+        Arc(200,10,True),
+        Arc(160,105,True),
+        
+        Slope(180,-1.0),
+        Slope(180,1.0),
 
         Straight(290)
     ]
@@ -170,6 +176,11 @@ ibisdash = Circuit(
     track="Niigata 1000m",
     geometry=[Straight(1000)]
 )
+
+
+
+
+
 
 
 if __name__ == "__main__":

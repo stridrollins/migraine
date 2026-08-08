@@ -153,27 +153,80 @@ class TrackVisualizer:
         sx = (x - self.min_x) * self.scale + 50
         sy = (y - self.min_y) * self.scale + 50
         sy = HEIGHT - sy
-        return sx, sy
+        return sy, sx
+
+
+
+
+
+
+
+
+
+
 
     def draw_track(self):
-        points = []
+        points = self.course.track
 
-        for p in self.course.track:
-            y, x = self.transform(p.x, p.y)
-            points.extend([x, y])
+        if len(points) < 2:
+            return
 
-        self.canvas.create_line(
-            points,
-            fill="white",
-            width=3
-        )
+        for i in range(len(points) - 1):
+
+            p1 = points[i]
+            p2 = points[i + 1]
+
+            x1, y1 = self.transform(p1.x, p1.y)
+            x2, y2 = self.transform(p2.x, p2.y)
+
+            # =========================
+            # Détermination de la phase
+            # =========================
+
+            if p1.gradient > 0:
+                # Pente
+                color = "#FF6600"
+
+            elif p1.gradient < 0:
+                color = "#00AA22"
+
+            elif p1.curvature != 0:
+                # Virage
+                color = "#00AAFF"
+
+            else:
+                # Ligne droite
+                color = "#FFFFFF"
+
+            self.canvas.create_line(
+                x1,
+                y1,
+                x2,
+                y2,
+                fill=color,
+                width=3
+            )
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def update(self):
         for obj, runner in zip(
             self.runner_objects,
             self.course.runners
         ):
-            y, x = self.transform(
+            x, y = self.transform(
                 runner.x,
                 runner.y
             )
@@ -253,16 +306,18 @@ class TrackVisualizer:
     def draw_marker(self, point, color, length=20):
         x, y = self.transform(point.x, point.y)
 
-        dx = cos(point.heading + pi / 2)
-        dy = -sin(point.heading + pi / 2)
+        dy = cos(point.heading + pi / 2)
+        dx = -sin(point.heading + pi / 2)
 
         half = length / 2
 
         self.canvas.create_line(
-            y - dy * half,
-            x - dx * half,
-            y + dy * half,
-            x + dx * half,
+            
+            x - dx * half, y - dy * half,
+            x + dx * half, y + dy * half,
+            
+            
+            
             fill=color,
             width=3
         )
