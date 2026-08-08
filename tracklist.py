@@ -132,13 +132,43 @@ laumamusume2 = Circuit(
     name="Lauma Musume Track N°2",
     track = "Nod-Krai Teappot",
     geometry = [
+        Straight(10),
+        Arc(15,20,True),
+        Straight(30),
+        Arc(15,85,True),
+        Slope(50,-2.0),
+        Arc(30,180,False),
+        Straight(50),
+        Arc(60,80,False),
+        Slope(30,5.0),
+        Slope(2,-7.0),
+        Arc(10,90,False),
         Straight(20),
-        Arc(100,100,False)
-
-
+        Arc(20,30,False),
+        Arc(60,90,True),
+        Straight(40),
+        Arc(2,90,True),
+        Straight(40),
+        Arc(2,90,True),
+        Straight(30),
+        Arc(2,90,False),
+        Straight(25),
+        Arc(10,50,False),
+        Slope(15,2.0),
+        Arc(5,180,False),
+        Straight(35),
+        Arc(8,50,False),
+        Straight(15),
+        Arc(20,17,True),
+        Straight(10)
 
 
     ]
+)
+ibisdash = Circuit(
+    name="Ibis Summer Dash",
+    track="Niigata 1000m",
+    geometry=[Straight(1000)]
 )
 
 

@@ -28,6 +28,16 @@ def create_courses():
             hanshin_2200,
             "b",
             create_runners()
+        ),
+        Course(
+            laumamusume2,
+            "a",
+            create_runners()
+        ),
+        Course(
+            ibisdash,
+            "b",
+            create_runners()
         )
     ]
 
@@ -35,7 +45,7 @@ def create_courses():
 def create_runners():
     return [
         Runner("Strid",1450,1250,1100),
-        Runner("Lilith",1600,1500,680),
+        Runner("Lilith",1600,1500,710),
         Runner("Chameau",1550,1200,885),
         Runner("Berserk",1490,1400,850)
     ]
@@ -44,7 +54,7 @@ def game_loop():
     if course.finished:
         print("Course terminée")
         return
-    for _ in range(5): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
+    for _ in range(1): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
 
         course.step(1/60)
 
@@ -72,7 +82,12 @@ while True:
         break
 
         
-    visualizer = TrackVisualizer(course)
-    game_loop()
-    visualizer.start()
+    visualizer=TrackVisualizer(course)
+
+    visualizer.root.after(
+        3000,
+        game_loop
+    )
+
+visualizer.start()
 

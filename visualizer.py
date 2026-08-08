@@ -1,13 +1,8 @@
 import tkinter as tk
-from math import cos, sin
-
+from math import cos, sin, pi
 
 WIDTH = 900
 HEIGHT = 700
-
-
-
-import tkinter as tk
 
 
 class CourseSelector:
@@ -29,16 +24,8 @@ class CourseSelector:
         for i, course in enumerate(courses):
             self.initframe(i, course)
 
-
     def initframe(self, i, course):
-
-        frame = tk.Frame(
-            self.root,
-         
-            bg="gray20",
-            bd=2,
-            relief="solid"
-        )
+        frame = tk.Frame(self.root, bg="gray20", bd=2, relief="solid")
 
         frame.grid(
             row=i // 2,
@@ -50,14 +37,9 @@ class CourseSelector:
 
         frame.grid_propagate(False)
 
-
         label = tk.Label(
             frame,
-            text=(
-                f"{course.circuit.name}\n"
-                f"{course.circuit.track}\n"
-               
-            ),
+            text=f"{course.circuit.name}\n{course.circuit.track}",
             font=("Arial", 16),
             fg="white",
             bg="gray20"
@@ -65,75 +47,22 @@ class CourseSelector:
 
         label.pack(expand=True)
 
-
-        # clic sur la carte
-        frame.bind(
-            "<Button-1>",
-            lambda event, c=course: self.select(c)
-        )
-
-        label.bind(
-            "<Button-1>",
-            lambda event, c=course: self.select(c)
-        )
-
+        frame.bind("<Button-1>", lambda event, c=course: self.select(c))
+        label.bind("<Button-1>", lambda event, c=course: self.select(c))
 
         self.frames.append(frame)
 
-
     def select(self, course):
-
         self.selected = course
         self.root.destroy()
 
-
     def start(self):
-
         self.root.mainloop()
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 class TrackVisualizer:
 
     def __init__(self, course):
-
         self.course = course
 
         self.root = tk.Tk()
@@ -147,6 +76,7 @@ class TrackVisualizer:
         )
 
         self.canvas.pack()
+
         self.return_button = tk.Button(
             self.root,
             text="Retour à la sélection",
@@ -154,50 +84,28 @@ class TrackVisualizer:
             command=self.return_to_menu
         )
 
-        self.return_button.pack(
-            pady=10
-        )
-
+        self.return_button.pack(pady=10)
         self.return_button.pack_forget()
 
         self.prepare_scale()
-
-
         self.draw_track()
 
-        self.draw_marker(
-            self.course.track[0],
-            "lime"
-        )
-
-        self.draw_marker(
-            self.course.track[-1],
-            "red"
-        )
+        self.draw_marker(self.course.track[0], "lime")
+        self.draw_marker(self.course.track[-1], "red")
 
         self.runner_objects = []
         self.runner_texts = []
 
-        colors = [
-            "cyan",
-            "pink",
-            "orange",
-            "green"
-        ]
+        colors = ["cyan", "pink", "orange", "green"]
 
         for i, runner in enumerate(course.runners):
-
             obj = self.canvas.create_oval(
-                0,
-                0,
-                10,
-                10,
+                0, 0, 10, 10,
                 fill=colors[i % len(colors)]
             )
 
             self.runner_objects.append(obj)
 
-        # Classement pendant la course
         self.ranking_text = self.canvas.create_text(
             20,
             HEIGHT - 250,
@@ -207,8 +115,6 @@ class TrackVisualizer:
             text=""
         )
 
-
-        # Résultats finaux
         self.results_text = self.canvas.create_text(
             WIDTH - 250,
             20,
@@ -218,77 +124,43 @@ class TrackVisualizer:
             text=""
         )
 
-
         self.restart_button = tk.Button(
-                self.root,
-                text="Rejouer cette course",
-                command=self.restart
-            )
-                
-
+            self.root,
+            text="Rejouer cette course",
+            command=self.restart
+        )
 
         self.update()
 
-
     def prepare_scale(self):
-
         xs = [p.x for p in self.course.track]
         ys = [p.y for p in self.course.track]
 
-
         self.min_x = min(xs)
         self.max_x = max(xs)
-
         self.min_y = min(ys)
         self.max_y = max(ys)
 
-
         width = self.max_x - self.min_x
         height = self.max_y - self.min_y
-
 
         self.scale = min(
             WIDTH / width,
             HEIGHT / height
         ) * 0.8
 
-
-
-    def transform(self,x,y):
-
-        sx = (
-            x - self.min_x
-        ) * self.scale + 50
-
-
-        sy = (
-            y - self.min_y
-        ) * self.scale + 50
-
-
-        # tkinter a l'axe Y inversé
+    def transform(self, x, y):
+        sx = (x - self.min_x) * self.scale + 50
+        sy = (y - self.min_y) * self.scale + 50
         sy = HEIGHT - sy
-
-
         return sx, sy
 
-
-
     def draw_track(self):
-
         points = []
 
         for p in self.course.track:
-
-            y,x = self.transform(
-                p.x,
-                p.y
-            )
-
-            points.extend(
-                [x,y]
-            )
-
+            y, x = self.transform(p.x, p.y)
+            points.extend([x, y])
 
         self.canvas.create_line(
             points,
@@ -296,15 +168,11 @@ class TrackVisualizer:
             width=3
         )
 
-
     def update(self):
-
         for obj, runner in zip(
             self.runner_objects,
-         
             self.course.runners
         ):
-
             y, x = self.transform(
                 runner.x,
                 runner.y
@@ -312,41 +180,24 @@ class TrackVisualizer:
 
             self.canvas.coords(
                 obj,
-                x-4,
-                y-4,
-                x+4,
-                y+4
+                x - 4,
+                y - 4,
+                x + 4,
+                y + 4
             )
-
-            
-
 
         self.update_ranking()
         self.update_results()
 
         if self.course.finished:
-            self.return_button.pack(
-                pady=10
-            )
+            self.return_button.pack(pady=10)
         else:
-            self.root.after(
-                16,
-                self.update
-            )
+            self.root.after(16, self.update)
 
     def update_ranking(self):
-
         if self.course.finished:
-
-            ranking = [
-                result[1]
-                for result in self.course.results
-            ]
-
+            ranking = [result[1] for result in self.course.results]
         else:
-
-
-
             ranking = sorted(
                 self.course.runners,
                 key=lambda r: r.distance,
@@ -359,7 +210,6 @@ class TrackVisualizer:
         )
 
         for position, runner in enumerate(ranking, start=1):
-
             progress = (
                 runner.distance /
                 self.course.circuit.length
@@ -380,7 +230,6 @@ class TrackVisualizer:
         )
 
     def update_results(self):
-
         if not self.course.results:
             return
 
@@ -390,13 +239,10 @@ class TrackVisualizer:
         )
 
         for position, runner, temps in self.course.results:
-
             texte += (
                 f"{position}. "
                 f"{runner.name:<10} "
                 f"{temps:6.2f}s\n"
-            
-                
             )
 
         self.canvas.itemconfig(
@@ -404,16 +250,11 @@ class TrackVisualizer:
             text=texte
         )
 
-
-
     def draw_marker(self, point, color, length=20):
+        x, y = self.transform(point.x, point.y)
 
-        x,y = self.transform(point.x, point.y)
-
-        # direction perpendiculaire à la piste
-        dx = cos(point.heading + 3.14159265 / 2)
-        dy = -sin(point.heading + 3.14159265 / 2)
-        # le signe - vient du fait que Tkinter inverse l'axe Y
+        dx = cos(point.heading + pi / 2)
+        dy = -sin(point.heading + pi / 2)
 
         half = length / 2
 
@@ -444,5 +285,3 @@ class TrackVisualizer:
         visualizer = TrackVisualizer(new_course)
         game_loop()
         visualizer.start()
-
-        
