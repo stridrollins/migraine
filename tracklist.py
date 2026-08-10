@@ -3,85 +3,49 @@ from runner import *
 
 
 nakayama_2000 = Circuit(
-    
     name="Satsuki Sho",
     track="Nakayama 2000m",
     geometry=[
 
         Straight(124),
 
-        Arc(
-            radius=100,
-            angle=180,
-            clockwise=True
-        ),
+        Arc(100, 180, True),
 
         Straight(280),
 
-        Arc(
-            radius=100,
-            angle=110,
-            clockwise=True
-        ),
+        Arc(100, 110, True),
 
-        Slope(
-            length=150,
-            gradient=2.2
-        ),
+        Slope(150, 2.2),
 
-        Arc(radius=70,
-            angle=80,
-            clockwise=True
-        ),
+        Arc(70, 80, True),
 
-        # Ligne du fond (outer)
         Straight(150),
 
-        Arc(radius=120,
-            angle=31,
-            clockwise=True
-        ),
+        Arc(120, 31, True),
+
         Straight(140),
 
-        Arc(radius=100,
-            angle =139,
-            clockwise=True),
+        Arc(100, 139, True),
 
         Straight(250)
     ]
 )
+
 tokyo_2400 = Circuit(
-    track="Tokyo 2400m",
     name="Japanese Derby",
+    track="Tokyo 2400m",
     geometry=[
 
-        # ligne droite avant le premier virage
-        Straight(360),
+        Straight(356),
 
-        # grand virage
-        Arc(
-            radius=172,
-            angle=180,
-            clockwise=False
-        ),
+        Arc(200, 85, False),
+        Arc(150, 95, False),
+        Straight(476),
 
-        # longue ligne opposée
-        Straight(480),
+        Arc(200, 85, False),
+        Arc(150, 95, False),
+        Slope(200, 2.0),
 
-        # dernier virage
-        Arc(
-            radius=172,
-            angle=180,
-            clockwise=False
-        ),
-
-        # montée finale
-        Slope(
-            length=200,
-            gradient=2.0
-        ),
-
-        # ligne droite finale
         Straight(280)
     ]
 )
@@ -120,17 +84,15 @@ hanshin_2200 = Circuit(
         Slope(295,-1.0),
         Slope(125,1.0),
         Straight(100),
-        Arc(110,165,True),
-
-        Straight(350),
-        Arc(130,80,True),
-        Arc(200,10,True),
-        Arc(160,105,True),
-        
-        Slope(180,-1.0),
-        Slope(180,1.0),
-
-        Straight(290)
+        Arc(134,85,True),
+        Arc(134,80,True),
+        Straight(348),
+	    Arc(170,75,True),
+        Arc(280,25,True),
+        Arc(145,95,True),
+        Slope(160,-1.0),
+        Slope(125,1.0),
+        Straight(83)
     ]
 )
 

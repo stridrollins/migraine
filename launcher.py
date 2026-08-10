@@ -44,10 +44,10 @@ def create_courses():
 
 def create_runners():
     return [
-        Runner("Strid",1450,1250,1100),
-        Runner("Lilith",1600,1500,710),
-        Runner("Berserk",1550,1200,885),
-        Runner("Chameau",1490,1400,850)
+        Runner("A",1450,1250,1100),
+        Runner("B",1600,1500,710),
+        Runner("C",1550,1200,885),
+        Runner("D",1490,1400,850)
     ]
 
 def game_loop():
