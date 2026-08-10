@@ -4,6 +4,7 @@ DEFAULT_SPEED = 60
 DEFAULT_DEAD_SPEED = 50
 DEFAULT_SPRINT_SPEED = 70
 DEFAULT_ACCEL = 1
+DEFAULT_HP_DRAIN = 0.1
 
 import time
 from visualizer import *
@@ -20,8 +21,6 @@ class Course:
         self.results=[]
         builder=TrackBuilder()
         self.track=builder.build(circuit)
-        
-   
 
     def step(self,dt):
         self.update(dt)
@@ -52,14 +51,15 @@ class Course:
                 runner.finished=True
                 self.results.append((len(self.results)+1,runner,self.time))
 
-        ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)
-
-        
+        ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)   
 
     def calculate_speed(self,runner,dt):
         acceleration=self._get_acceleration(runner)
         target_speed=self._get_base_speed(runner)
         target_speed=self._get_corner_target(runner,target_speed,acceleration)
+
+
+
         target_speed=self._smooth_target_speed(runner,target_speed,dt)
         self._update_current_speed(runner,target_speed,acceleration,dt)
         self._update_hp(runner,dt)
@@ -118,4 +118,7 @@ class Course:
             runner.current_speed=max(runner.current_speed-acceleration*10*dt,target_speed)
 
     def _update_hp(self,runner,dt):
-        runner.hp=max(0,runner.hp-(runner.current_speed/1200*120)*dt)
+        
+        runner.hp=max(0,runner.hp - (runner.current_speed*DEFAULT_HP_DRAIN)*dt - (runner.current_speed*runner.hp_drain)*dt)
+      
+        runner.total_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt

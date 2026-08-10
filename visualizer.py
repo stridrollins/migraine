@@ -4,7 +4,6 @@ from math import cos, sin, pi
 WIDTH = 900
 HEIGHT = 700
 
-
 class CourseSelector:
 
     def __init__(self, courses):
@@ -58,7 +57,6 @@ class CourseSelector:
 
     def start(self):
         self.root.mainloop()
-
 
 class TrackVisualizer:
 
@@ -155,16 +153,6 @@ class TrackVisualizer:
         sy = HEIGHT - sy
         return sy, sx
 
-
-
-
-
-
-
-
-
-
-
     def draw_track(self):
         points = self.course.track
 
@@ -207,20 +195,6 @@ class TrackVisualizer:
                 width=3
             )
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     def update(self):
         for obj, runner in zip(
             self.runner_objects,
@@ -230,7 +204,6 @@ class TrackVisualizer:
                 runner.x,
                 runner.y
             )
-
             self.canvas.coords(
                 obj,
                 x - 4,
@@ -238,7 +211,6 @@ class TrackVisualizer:
                 x + 4,
                 y + 4
             )
-
         self.update_ranking()
         self.update_results()
 
@@ -269,12 +241,15 @@ class TrackVisualizer:
             ) * 100
 
             classement += (
-                f"{position}. "
-                f"{runner.name:<10} "
-                f"{runner.distance:7.1f}m "
-                f"({progress:5.1f}%) "
-                f"{runner.current_speed:5.1f} km/h "
-                f"{runner.hp:.0f} HP\n"
+             #   f"{position}. "
+             #   f"{runner.name:<10} "
+             #   f"{runner.distance:7.1f}m "
+             #   f"({progress:5.1f}%) "
+              #  f"{runner.current_speed:5.1f} km/h "
+              #  f"{runner.hp:.0f} HP "
+                #f"{runner.total_hp_drain:.3f} Total "
+                f"{self.course.track[runner.track_index].curvature}"
+                f"\n"
             )
 
         self.canvas.itemconfig(
@@ -316,8 +291,6 @@ class TrackVisualizer:
             x - dx * half, y - dy * half,
             x + dx * half, y + dy * half,
             
-            
-            
             fill=color,
             width=3
         )
@@ -336,7 +309,6 @@ class TrackVisualizer:
             self.course.conditions,
             create_runners()
         )
-
         visualizer = TrackVisualizer(new_course)
         game_loop()
         visualizer.start()

@@ -12,8 +12,11 @@ class Runner:
         self.x =0
         self.y =0
         self.finished = False
+
         self.current_speed = 0
         self.hp  = self.stamina
+        self.hp_drain = 0
+        self.total_hp_drain = 0
         self.target_speed =0
 
     def update_skills(self, course, dt):

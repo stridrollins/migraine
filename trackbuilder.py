@@ -8,29 +8,31 @@ STEP = 2.0
 @dataclass
 class Straight:
     length: float
+    gradient: float = 0.0
+    is_final_straight:bool = False
 
 
 @dataclass
 class Arc:
+    nb: int
     radius: float
     angle: float
     clockwise: bool
+    gradient: float = 0.0
+    is_final_corner:bool =False
 
 
-@dataclass
-class Slope:
-    length: float
-    gradient: float
 
 
-Geometry = Straight | Arc | Slope
 
+Geometry = Straight | Arc 
 
 @dataclass
 class Circuit:
     name: str
     track:str
     geometry: list[Geometry]
+    gradient: float = 0.0
     length: float = 0
 
 
@@ -69,15 +71,13 @@ class TrackBuilder:
         for part in circuit.geometry:
 
 
-            if isinstance(part, (Straight, Slope)):
+            if isinstance(part, (Straight)):
 
                 n = int(part.length / STEP)
 
-                gradient = (
-                    part.gradient
-                    if isinstance(part, Slope)
-                    else 0
-                )
+                gradient = part.gradient
+                    
+                
 
 
                 for _ in range(n):
@@ -103,7 +103,7 @@ class TrackBuilder:
                 direction = 1 if part.clockwise else -1
 
                 arc = radians(part.angle)
-
+                gradient = part.gradient
                 n = int(abs(part.radius * arc) / STEP)
 
                 dtheta = direction * abs(arc) / n

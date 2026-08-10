@@ -54,7 +54,7 @@ def game_loop():
     if course.finished:
         print("Course terminée")
         return
-    for _ in range(10): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
+    for _ in range(5): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
 
         course.step(1/60)
 
