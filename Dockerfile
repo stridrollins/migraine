@@ -8,4 +8,4 @@ RUN apt-get update && apt-get install -y \
     python3-tk \
     && rm -rf /var/lib/apt/lists/*
 
-CMD ["python", "moteurdecourse.py"]
+CMD ["python", "launcher.py"]
