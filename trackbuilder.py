@@ -67,26 +67,14 @@ class TrackBuilder:
             )
         ]
 
-
         for part in circuit.geometry:
-
-
             if isinstance(part, (Straight)):
-
                 n = int(part.length / STEP)
-
                 gradient = part.gradient
-                    
-                
-
-
                 for _ in range(n):
-
                     x += STEP * cos(heading)
                     y += STEP * sin(heading)
-
                     distance += STEP
-
                     points.append(
                         TrackPoint(
                             x=x,
@@ -96,7 +84,6 @@ class TrackBuilder:
                             curvature=0
                         )
                     )
-
 
             elif isinstance(part, Arc):
 

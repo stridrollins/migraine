@@ -9,6 +9,7 @@ DEFAULT_HP_DRAIN = 0.1
 import time
 from visualizer import *
 from tracklist import *
+from runner import *
 
 class Course:
     def __init__(self,circuit,conditions,runners):
@@ -32,10 +33,10 @@ class Course:
 
     def update(self,dt):
         self.time+=dt
-
         for runner in self.runners:
             if runner.finished:
                 continue
+            runner.update_skills(self, dt)
 
             current_speed=self.calculate_speed(runner,dt)
             speed_ms=current_speed/3.6
@@ -54,31 +55,49 @@ class Course:
         ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)   
 
     def calculate_speed(self,runner,dt):
-        acceleration=self._get_acceleration(runner)
-        target_speed=self._get_base_speed(runner)
+
+        target_speed,acceleration =self._get_base_speed(runner,dt)
         target_speed=self._get_corner_target(runner,target_speed,acceleration)
 
 
 
         target_speed=self._smooth_target_speed(runner,target_speed,dt)
         self._update_current_speed(runner,target_speed,acceleration,dt)
-        self._update_hp(runner,dt)
+        
         return runner.current_speed
 
-    def _get_base_speed(self,runner):
-        if runner.hp<=0:
-            return DEFAULT_DEAD_SPEED+runner.speed/1000
-
+    def _get_base_speed(self,runner,dt):
+###formules====================================================
+        dead_speed = DEFAULT_DEAD_SPEED+runner.speed/1000
+        sprint_speed= DEFAULT_SPRINT_SPEED*0.5+(runner.speed/20)*0.5
         normal_speed=DEFAULT_SPEED*0.9+(runner.speed/20)*0.1
-        sprint_speed=DEFAULT_SPRINT_SPEED*0.5+(runner.speed/20)*0.5
+        base_accel = DEFAULT_ACCEL*runner.power/1000
+        base_hp_drain = max(0,runner.hp - (runner.current_speed*DEFAULT_HP_DRAIN)*dt - (runner.current_speed*runner.hp_drain)*dt)
 
-        if runner.distance>=self.circuit.length*2/3:
-            return sprint_speed
+####Speed===============================================================
+        if runner.hp<=0:
+            target_speed = dead_speed
+        else:
+            if runner.distance>=self.circuit.length*2/3:
+                target_speed= sprint_speed
+            else:
+                target_speed=normal_speed
+####Power=================================================================
+        target_accel = base_accel
+####Stamina ================================================================
+        runner.hp=base_hp_drain
+        
+#############=============================================================
+        for effect in runner.active_effects:
+            if isinstance(effect,Velocity):
+                target_speed = effect.skill_speed(target_speed)
+            if isinstance(effect,Acceleration):
+                target_accel = effect.skill_acceleration(target_accel)
+            if isinstance(effect, Recovery):
+                runner.hp = effect.skill_recovery(runner.hp)
 
-        return normal_speed
-
-    def _get_acceleration(self,runner):
-        return DEFAULT_ACCEL*runner.power/1000
+            runner.total_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt
+        return (target_speed,target_accel)
 
     def _get_corner_target(self,runner,target_speed,acceleration):
         current_index=runner.track_index
@@ -116,9 +135,3 @@ class Course:
                 
         else:
             runner.current_speed=max(runner.current_speed-acceleration*10*dt,target_speed)
-
-    def _update_hp(self,runner,dt):
-        
-        runner.hp=max(0,runner.hp - (runner.current_speed*DEFAULT_HP_DRAIN)*dt - (runner.current_speed*runner.hp_drain)*dt)
-      
-        runner.total_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt
