@@ -1,5 +1,11 @@
 
 
+from trackbuilder import *
+from visualizer import *
+from factories import *
+from runner import *
+from skills import *
+
 DEFAULT_SPEED = 60
 DEFAULT_DEAD_SPEED = 50
 DEFAULT_SPRINT_SPEED = 70
@@ -15,10 +21,7 @@ DOWNHILL_HP_FACTOR = -0.2
 
 
 
-import time
-from visualizer import *
-from tracklist import *
-from runner import *
+
 
 class Course:
     def __init__(self,circuit,conditions,runners):

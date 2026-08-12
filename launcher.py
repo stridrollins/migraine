@@ -1,46 +1,9 @@
-from moteurdecourse import *
- 
-def create_courses():
-    return [
-        Course(
-            nakayama_2000,
-            "b",
-            create_runners()
-        ),
-        Course(
-            tokyo_2400,
-            "b",
-            create_runners()
-        ),
-        Course(
-            kyoto_3000,
-            "b",
-            create_runners()
-        ),
-        Course(
-            hanshin_2200,
-            "b",
-            create_runners()
-        ),
-        Course(
-            laumamusume2,
-            "a",
-            create_runners()
-        ),
-        Course(
-            ibisdash,
-            "b",
-            create_runners()
-        )
-    ]
 
-def create_runners():
-    return [
-        Runner("A",1450,1250,1100),
-        Runner("B",1600,1500,710),
-        Runner("C",1550,1200,885),
-        Runner("D",1490,1400,850)
-    ]
+from factories import *
+from visualizer import *
+from moteurdecourse import *
+
+
 
 def game_loop():
     if course.finished:

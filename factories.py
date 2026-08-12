@@ -1,5 +1,15 @@
+from runner import Runner
+from skills import *
+from moteurdecourse import Course
 from trackbuilder import *
-from runner import *
+
+def create_runners():
+    return [
+        Runner("A",1450,1250,1100),
+        Runner("B",1600,1500,710),
+        Runner("C",1550,1200,885),
+        Runner("D",1490,1400,850)
+    ]
 
 
 nakayama_2000 = Circuit(
@@ -127,11 +137,6 @@ ibisdash = Circuit(
 )
 
 
-
-
-
-
-
 if __name__ == "__main__":
     tokyo = TrackBuilder().build(tokyo_2400)
     nakayama = TrackBuilder().build(nakayama_2000)
@@ -145,3 +150,39 @@ if __name__ == "__main__":
     print(hanshin_2200.length)
     print(nakayama_2000.length)
     print(laumamusume2.length)
+
+def create_courses():
+    return [
+        Course(
+            nakayama_2000,
+            "b",
+            create_runners()
+        ),
+        Course(
+            tokyo_2400,
+            "b",
+            create_runners()
+        ),
+        Course(
+            kyoto_3000,
+            "b",
+            create_runners()
+        ),
+        Course(
+            hanshin_2200,
+            "b",
+            create_runners()
+        ),
+        Course(
+            laumamusume2,
+            "a",
+            create_runners()
+        ),
+        Course(
+            ibisdash,
+            "b",
+            create_runners()
+        )
+    ]
+
+

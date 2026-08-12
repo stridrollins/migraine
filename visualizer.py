@@ -1,6 +1,8 @@
 import tkinter as tk
 from math import cos, sin, pi
 
+from factories import *
+
 WIDTH = 900
 HEIGHT = 700
 
@@ -102,11 +104,7 @@ class TrackVisualizer:
             font=("Courier", 12),
             text=""
         )
-        self.restart_button = tk.Button(
-            self.root,
-            text="Rejouer cette course",
-            command=self.restart
-        )
+
         self.update()
 
     def prepare_scale(self):
@@ -255,13 +253,4 @@ class TrackVisualizer:
     def start(self):
         self.root.mainloop()
 
-    def restart(self):
-        self.root.destroy()
-        new_course = Course(
-            self.course.circuit,
-            self.course.conditions,
-            create_runners()
-        )
-        visualizer = TrackVisualizer(new_course)
-        game_loop()
-        visualizer.start()
+
