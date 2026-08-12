@@ -46,7 +46,7 @@ def game_loop():
     if course.finished:
         print("Course terminée")
         return
-    for _ in range(5): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
+    for _ in range(2): #le nombre est le facteur de vitesse, avec 2 -> ecoulement du temps 2x plus rapide
 
         course.step(1/60)
 
@@ -69,5 +69,8 @@ while True:
         3000,
         game_loop
     )
-visualizer.start()
+    visualizer.start()
+    
+    if not visualizer.return_to_selection:
+        break
 

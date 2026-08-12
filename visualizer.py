@@ -54,6 +54,10 @@ class TrackVisualizer:
         self.course = course
         self.root = tk.Tk()
         self.root.title(course.circuit.name)
+        self.return_to_selection = False
+        self.root.protocol("WM_DELETE_WINDOW", self.close)
+
+
         self.canvas = tk.Canvas(
             self.root,
             width=WIDTH,
@@ -68,7 +72,7 @@ class TrackVisualizer:
             command=self.return_to_menu
         )
         self.return_button.pack(pady=10)
-        self.return_button.pack_forget()
+        
         self.prepare_scale()
         self.draw_track()
         self.draw_marker(self.course.track[0], "lime")
@@ -242,6 +246,10 @@ class TrackVisualizer:
         )
 
     def return_to_menu(self):
+        self.return_to_selection = True
+        self.root.destroy()
+
+    def close(self):
         self.root.destroy()
 
     def start(self):
