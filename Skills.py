@@ -5,12 +5,12 @@ from math import ceil, floor
 @dataclass
 class Skill:
     name: str
-    trigger: callable
+    trigger: SkillTrigger
     effects: list = field(default_factory=list)
     used: bool = False
 
     def check(self, course, runner):
-        return not self.used and self.trigger(course, runner)
+        return not self.used and self.trigger.check(course, runner)
 
     def activate(self, course, runner):
         for effect in self.effects:
@@ -60,8 +60,6 @@ class BeforePositionTrigger(SkillTrigger):
 class AfterPositionTrigger(SkillTrigger):
     percentage: float
 
-
-
     def check(self,course,runner):
         return runner.position >= floor(len(course.runners) * (self.percentage/100))
 
@@ -72,6 +70,31 @@ class BetweenPositionTrigger(SkillTrigger):
 
     def check(self,course,runner):
         return runner.position >= floor(len(course.runners) * (self.p1/100)) and runner.position <= ceil(len(course.runners) * (self.p2/100))
+
+class UphillTrigger(SkillTrigger):
+    def check(self, course, runner):
+        gradient = course.track[runner.track_index].gradient
+        return gradient > 0
+
+class DownhillTrigger(SkillTrigger):
+    def check(self, course, runner):
+        gradient = course.track[runner.track_index].gradient
+        return gradient < 0
+
+class CornerTrigger(SkillTrigger):
+    def check(self, course, runner):
+        curve = course.track[runner.track_index].curvature
+        return curve > 0
+
+class StrightawayTrigger(SkillTrigger):
+    def check(self, course, runner):
+        curve = course.track[runner.track_index].curvature
+        return curve == 0
+
+
+
+
+
     
 ####Effects==================================================================
 
@@ -80,8 +103,7 @@ class Effect:
         raise NotImplementedError
 
     def update(self,target,dt):
-        raise NotImplementedError
-
+        pass
     @property
     def expired(self):
         return self.duration <= 0
@@ -92,6 +114,9 @@ class Velocity(Effect):
     duration:float
     def update(self,target,dt):
         self.duration -= dt
+    @property
+    def expired(self):
+        return self.duration <= 0
     def apply(self,target):
         target.active_effects.append(self)
     def skill_speed(self,speed):
@@ -103,6 +128,9 @@ class Acceleration(Effect):
     duration:float
     def update(self,target,dt):
         self.duration -= dt
+    @property
+    def expired(self):
+        return self.duration <= 0
     def apply(self,target):
         target.active_effects.append(self)
     def skill_acceleration(self,accel):
@@ -113,5 +141,4 @@ class Recovery(Effect):
     amount:float
     def apply(self,target):
         target.hp += self.amount
-    def update(self, target, dt):
-        pass
+

@@ -1,14 +1,14 @@
-from skills import *
+from skills import Skill
 
 class Runner:
-    def __init__(self, name,speed,power,stamina):
+    def __init__(self, name,speed,power,stamina, skills = None):
         self.name = name
         self.position = 0
         self.speed = speed
         self.power = power
         self.stamina = stamina
 
-        self.skills = []
+        self.skills = skills or []
 
         self.distance = 0
         self.track_index =0

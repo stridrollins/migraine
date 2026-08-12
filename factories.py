@@ -1,14 +1,13 @@
 from runner import Runner
 from skills import *
+from skillfactory import *
 from moteurdecourse import Course
 from trackbuilder import *
 
 def create_runners():
     return [
-        Runner("A",1450,1250,1100),
-        Runner("B",1600,1500,710),
-        Runner("C",1550,1200,885),
-        Runner("D",1490,1400,850)
+        Runner("A",1450,1250,1100,skills=[stamina_recovery()]),
+        Runner("B",1450,1250,1100,skills=[straight_descent()])
     ]
 
 
@@ -137,20 +136,6 @@ ibisdash = Circuit(
 )
 
 
-if __name__ == "__main__":
-    tokyo = TrackBuilder().build(tokyo_2400)
-    nakayama = TrackBuilder().build(nakayama_2000)
-    hanshin = TrackBuilder().build(hanshin_2200)
-    kyoto = TrackBuilder().build(kyoto_3000)
-    lauma = TrackBuilder().build(laumamusume2)
-
-
-    print(kyoto_3000.length)
-    print(tokyo_2400.length)
-    print(hanshin_2200.length)
-    print(nakayama_2000.length)
-    print(laumamusume2.length)
-
 def create_courses():
     return [
         Course(
@@ -185,4 +170,16 @@ def create_courses():
         )
     ]
 
+def create_uphill_adept():
+    return Skill (name="Uphill Adept", trigger=UphillTrigger(), 
+                  effects =[Velocity(amount=50,duration=50)])
 
+def create_corner_adept():
+    return Skill (name="Uphill Adept", trigger=CornerTrigger(), 
+                  effects =[Velocity(amount=50,duration=50)])
+
+
+SKILLS = {
+    "uphill_adept":create_uphill_adept,
+    "corner_adept":create_corner_adept
+}

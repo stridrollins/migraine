@@ -1,7 +1,6 @@
 
 
 from trackbuilder import *
-from visualizer import *
 from factories import *
 from runner import *
 from skills import *
