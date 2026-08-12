@@ -1,5 +1,4 @@
-from dataclasses import dataclass
-from runner import Runner
+
 from dataclasses import dataclass, field
 from math import ceil, floor
 
@@ -15,13 +14,11 @@ class Skill:
 
     def activate(self, course, runner):
         for effect in self.effects:
-            effect.apply(course, runner)
-
+            effect.apply( runner)
         self.used = True
 
     def update(self, dt):
         pass
-
 
 ####Triggers======================================================
 
@@ -54,6 +51,7 @@ class BetweenDistanceTrigger(SkillTrigger):
 @dataclass
 class BeforePositionTrigger(SkillTrigger):
     percentage: float
+
     def check(self,course,runner):
         return runner.position <= ceil(len(course.runners) * (self.percentage/100))
 
@@ -61,6 +59,9 @@ class BeforePositionTrigger(SkillTrigger):
 @dataclass
 class AfterPositionTrigger(SkillTrigger):
     percentage: float
+
+
+
     def check(self,course,runner):
         return runner.position >= floor(len(course.runners) * (self.percentage/100))
 
@@ -71,10 +72,7 @@ class BetweenPositionTrigger(SkillTrigger):
 
     def check(self,course,runner):
         return runner.position >= floor(len(course.runners) * (self.p1/100)) and runner.position <= ceil(len(course.runners) * (self.p2/100))
-
-
-
-
+    
 ####Effects==================================================================
 
 class Effect:
@@ -88,12 +86,6 @@ class Effect:
     def expired(self):
         return self.duration <= 0
 
-
-
-
-
-
-
 @dataclass 
 class Velocity(Effect):
     amount:float
@@ -105,7 +97,6 @@ class Velocity(Effect):
     def skill_speed(self,speed):
         return speed + self.amount
 
-
 @dataclass 
 class Acceleration(Effect):
     amount:float
@@ -114,13 +105,13 @@ class Acceleration(Effect):
         self.duration -= dt
     def apply(self,target):
         target.active_effects.append(self)
-    def skill_accel(self,accel):
+    def skill_acceleration(self,accel):
         return accel + self.amount
+    
 @dataclass 
 class Recovery(Effect):
     amount:float
-   
     def apply(self,target):
-        target.active_effects.append(self)
-    def skill_recovery(self,recovery):
-        return recovery + self.amount
+        target.hp += self.amount
+    def update(self, target, dt):
+        pass

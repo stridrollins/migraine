@@ -6,6 +6,15 @@ DEFAULT_SPRINT_SPEED = 70
 DEFAULT_ACCEL = 1
 DEFAULT_HP_DRAIN = 0.1
 
+UPHILL_SPEED_FACTOR = 1
+UPHILL_ACCEL_FACTOR = 1
+UPHILL_HP_FACTOR = 1
+DOWNHILL_SPEED_FACTOR = 1
+DOWNHILL_ACCEL_FACTOR = 1
+DOWNHILL_HP_FACTOR = 1
+
+
+
 import time
 from visualizer import *
 from tracklist import *
@@ -93,10 +102,9 @@ class Course:
                 target_speed = effect.skill_speed(target_speed)
             if isinstance(effect,Acceleration):
                 target_accel = effect.skill_acceleration(target_accel)
-            if isinstance(effect, Recovery):
-                runner.hp = effect.skill_recovery(runner.hp)
+            
 
-            runner.total_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt
+            
         return (target_speed,target_accel)
 
     def _get_corner_target(self,runner,target_speed,acceleration):
@@ -120,6 +128,14 @@ class Course:
             return min(target_speed,allowed_speed)
         return target_speed
 
+    def _get_hill_target(self,runner,target_speed,acceleration):
+        current_index = runner.track_index
+        if self.track[current_index].gradient > 0:
+            target_speed -= UPHILL_SPEED_FACTOR 
+            acceleration -= UPHILL_ACCEL_FACTOR
+
+
+
     def _smooth_target_speed(self,runner,target_speed,dt):
         TARGET_SPEED_SMOOTHING=3.0
         runner.target_speed+=(target_speed-runner.target_speed)*TARGET_SPEED_SMOOTHING*dt
@@ -135,3 +151,6 @@ class Course:
                 
         else:
             runner.current_speed=max(runner.current_speed-acceleration*10*dt,target_speed)
+
+    def _get_hp_drain(self,runner,dt):
+        runner.total_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt

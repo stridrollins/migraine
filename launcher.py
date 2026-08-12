@@ -1,29 +1,22 @@
 from moteurdecourse import *
-
-
-
-    
+ 
 def create_courses():
-
     return [
         Course(
             nakayama_2000,
             "b",
             create_runners()
         ),
-
         Course(
             tokyo_2400,
             "b",
             create_runners()
         ),
-
         Course(
             kyoto_3000,
             "b",
             create_runners()
         ),
-
         Course(
             hanshin_2200,
             "b",
@@ -40,7 +33,6 @@ def create_courses():
             create_runners()
         )
     ]
-
 
 def create_runners():
     return [
@@ -63,31 +55,19 @@ def game_loop():
         game_loop
     )
 
-
-
-
 ###PROGRAME PRINCIPAL
 
 while True:
-
     courses = create_courses()
     selector = CourseSelector(courses)
-
-
     selector.start()
-
     course = selector.selected
-
     if course is None:
-        break
-
-        
+        break 
     visualizer=TrackVisualizer(course)
-
     visualizer.root.after(
         3000,
         game_loop
     )
-
 visualizer.start()
 

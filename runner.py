@@ -1,4 +1,4 @@
-from Skills import *
+from skills import *
 
 class Runner:
     def __init__(self, name,speed,power,stamina):
@@ -23,18 +23,14 @@ class Runner:
         self.hp_drain = 0
         self.total_hp_drain = 0
 
-        
         self.active_effects =[]
-
+        
 
     def update_skills(self, course, dt):
-
         for skill in self.skills:
             if skill.check(course, self):
                 skill.activate(course, self)
-
             skill.update(dt)
-
         for effect in self.active_effects:
             effect.update(self, dt)
 

@@ -9,23 +9,18 @@ class CourseSelector:
     def __init__(self, courses):
         self.courses = courses
         self.selected = None
-
         self.root = tk.Tk()
         self.root.title("Course Selector")
         self.root.geometry("1080x780")
-
         self.frames = []
-
         for i in range(2):
             self.root.grid_rowconfigure(i, weight=1)
             self.root.grid_columnconfigure(i, weight=1)
-
         for i, course in enumerate(courses):
             self.initframe(i, course)
 
     def initframe(self, i, course):
         frame = tk.Frame(self.root, bg="gray20", bd=2, relief="solid")
-
         frame.grid(
             row=i // 2,
             column=i % 2,
@@ -33,9 +28,7 @@ class CourseSelector:
             pady=30,
             sticky="nsew"
         )
-
         frame.grid_propagate(False)
-
         label = tk.Label(
             frame,
             text=f"{course.circuit.name}\n{course.circuit.track}",
@@ -43,12 +36,9 @@ class CourseSelector:
             fg="white",
             bg="gray20"
         )
-
         label.pack(expand=True)
-
         frame.bind("<Button-1>", lambda event, c=course: self.select(c))
         label.bind("<Button-1>", lambda event, c=course: self.select(c))
-
         self.frames.append(frame)
 
     def select(self, course):
@@ -62,48 +52,36 @@ class TrackVisualizer:
 
     def __init__(self, course):
         self.course = course
-
         self.root = tk.Tk()
         self.root.title(course.circuit.name)
-
         self.canvas = tk.Canvas(
             self.root,
             width=WIDTH,
             height=HEIGHT,
             bg="black"
         )
-
         self.canvas.pack()
-
         self.return_button = tk.Button(
             self.root,
             text="Retour à la sélection",
             font=("Arial", 14),
             command=self.return_to_menu
         )
-
         self.return_button.pack(pady=10)
         self.return_button.pack_forget()
-
         self.prepare_scale()
         self.draw_track()
-
         self.draw_marker(self.course.track[0], "lime")
         self.draw_marker(self.course.track[-1], "red")
-
         self.runner_objects = []
         self.runner_texts = []
-
         colors = ["cyan", "pink", "orange", "green"]
-
         for i, runner in enumerate(course.runners):
             obj = self.canvas.create_oval(
                 0, 0, 10, 10,
                 fill=colors[i % len(colors)]
             )
-
             self.runner_objects.append(obj)
-
         self.ranking_text = self.canvas.create_text(
             20,
             HEIGHT - 250,
@@ -112,7 +90,6 @@ class TrackVisualizer:
             font=("Courier", 12),
             text=""
         )
-
         self.results_text = self.canvas.create_text(
             WIDTH - 250,
             20,
@@ -121,27 +98,22 @@ class TrackVisualizer:
             font=("Courier", 12),
             text=""
         )
-
         self.restart_button = tk.Button(
             self.root,
             text="Rejouer cette course",
             command=self.restart
         )
-
         self.update()
 
     def prepare_scale(self):
         xs = [p.x for p in self.course.track]
         ys = [p.y for p in self.course.track]
-
         self.min_x = min(xs)
         self.max_x = max(xs)
         self.min_y = min(ys)
         self.max_y = max(ys)
-
         width = self.max_x - self.min_x
         height = self.max_y - self.min_y
-
         self.scale = min(
             WIDTH / width,
             HEIGHT / height
@@ -155,37 +127,23 @@ class TrackVisualizer:
 
     def draw_track(self):
         points = self.course.track
-
         if len(points) < 2:
             return
-
         for i in range(len(points) - 1):
-
             p1 = points[i]
             p2 = points[i + 1]
-
             x1, y1 = self.transform(p1.x, p1.y)
             x2, y2 = self.transform(p2.x, p2.y)
-
-            # =========================
-            # Détermination de la phase
-            # =========================
-
+         
+            ####Couleurs=======================
             if p1.gradient > 0:
-                # Pente
                 color = "#FF6600"
-
             elif p1.gradient < 0:
                 color = "#00AA22"
-
             elif p1.curvature != 0:
-                # Virage
                 color = "#00AAFF"
-
             else:
-                # Ligne droite
                 color = "#FFFFFF"
-
             self.canvas.create_line(
                 x1,
                 y1,
@@ -228,30 +186,26 @@ class TrackVisualizer:
                 key=lambda r: r.distance,
                 reverse=True
             )
-
         classement = (
             f"Temps : {self.course.time:.2f}s\n"
             "====================\n"
         )
-
         for position, runner in enumerate(ranking, start=1):
             progress = (
                 runner.distance /
                 self.course.circuit.length
             ) * 100
-
             classement += (
-             #   f"{position}. "
-             #   f"{runner.name:<10} "
-             #   f"{runner.distance:7.1f}m "
-             #   f"({progress:5.1f}%) "
-              #  f"{runner.current_speed:5.1f} km/h "
-              #  f"{runner.hp:.0f} HP "
-                #f"{runner.total_hp_drain:.3f} Total "
-                f"{self.course.track[runner.track_index].curvature}"
+                f"{position}. "
+                f"{runner.name:<10} "
+                f"{runner.distance:7.1f}m "
+                f"({progress:5.1f}%) "
+                f"{runner.current_speed:5.1f} km/h "
+                f"{runner.hp:.0f} HP "
+                f"{runner.total_hp_drain:.3f} Total "
+                #f"{self.course.track[runner.track_index].curvature}"
                 f"\n"
             )
-
         self.canvas.itemconfig(
             self.ranking_text,
             text=classement
@@ -260,19 +214,16 @@ class TrackVisualizer:
     def update_results(self):
         if not self.course.results:
             return
-
         texte = (
             "ARRIVEES\n"
             "================\n"
         )
-
         for position, runner, temps in self.course.results:
             texte += (
                 f"{position}. "
                 f"{runner.name:<10} "
                 f"{temps:6.2f}s\n"
             )
-
         self.canvas.itemconfig(
             self.results_text,
             text=texte
@@ -280,17 +231,12 @@ class TrackVisualizer:
 
     def draw_marker(self, point, color, length=20):
         x, y = self.transform(point.x, point.y)
-
         dy = cos(point.heading + pi / 2)
         dx = -sin(point.heading + pi / 2)
-
         half = length / 2
-
         self.canvas.create_line(
-            
             x - dx * half, y - dy * half,
             x + dx * half, y + dy * half,
-            
             fill=color,
             width=3
         )
@@ -303,7 +249,6 @@ class TrackVisualizer:
 
     def restart(self):
         self.root.destroy()
-
         new_course = Course(
             self.course.circuit,
             self.course.conditions,
