@@ -18,6 +18,8 @@ DEFAULT_SPRINT_SPEED = 70
 DEFAULT_ACCEL = 1
 DEFAULT_HP_DRAIN = 0.1
 
+
+CURVATURE_SPEED_DRAIN=3.0
 UPHILL_SPEED_FACTOR = -0.1
 UPHILL_ACCEL_FACTOR = -0.2
 UPHILL_HP_FACTOR = 0.1
@@ -183,8 +185,8 @@ class Course:
             curvature=abs(self.track[i].curvature)
             if curvature<=0:
                 continue
-            K=3.0
-            corner_factor=max(0.6,1-K*curvature)
+            
+            corner_factor=max(0.6,1-CURVATURE_SPEED_DRAIN*curvature)
             corner_speed=target_speed*corner_factor
             distance=(i-current_index)*STEP
             acceleration_ms=acceleration/3.6
