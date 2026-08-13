@@ -3,7 +3,10 @@ from skills import *
 #To do : Ramp up & it's on overtake trigger
 
 
-
+EARLY_RACE = 0
+MID_RACE = 100*1/3 
+LATE_RACE = 100*2/3 
+LAST_SPURT = 100*5/6
 
 
 
@@ -14,7 +17,7 @@ def corner_adept():
     return Skill(
         "Corner Adept",
         "Standard",
-        CornerTrigger(),
+        CornerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.25)],
         duration = 3.0
     )
@@ -23,7 +26,7 @@ def professor_of_curvature():
     return Skill(
         "Professor of Curvature",
         "Rare",
-        CornerTrigger(),
+        CornerTrigger()& BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.5)],
         duration = 3.0
     )
@@ -32,7 +35,7 @@ def straightaway_adept():
     return Skill(
         "Straightaway Adept",
         "Standard",
-        StrightawayTrigger(),
+        StrightawayTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.25)],
         duration = 3.0
     )
@@ -41,7 +44,7 @@ def beeline_burst():
     return Skill(
         "Beeline Burst",
         "Rare",
-        StrightawayTrigger(),
+        StrightawayTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.5)],
         duration = 3.0
     )
@@ -88,7 +91,7 @@ def fast_paced():
     return Skill(
         "Fast Paced",
         "Standard",
-        BeforePositionTrigger(30) & BeforeDistanceTrigger(100*2/3) & AfterDistanceTrigger(100*1/3),
+        BeforePositionTrigger(30) & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.25)],
         duration = 3.5
     )
@@ -97,7 +100,7 @@ def escape_artist():
     return Skill(
         "Escape Artist",
         "Rare",
-        BeforePositionTrigger(30) & BeforeDistanceTrigger(100*2/3) & AfterDistanceTrigger(100*1/3),
+        BeforePositionTrigger(30) & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
         [Velocity(0.5)],
         duration = 3.5
     )

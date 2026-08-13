@@ -6,34 +6,28 @@ from trackbuilder import *
 
 def create_runners():
     return [
-        Runner("Strid",1520,1100,1100,"end",color="cyan",
+        Runner("Strid",1420,1100,1100,"front",color="cyan",
                skills=[
 
-                   
                ]),
 
-        Runner("Chameau", 1420, 1200, 750,"pace", color="orange",
+        Runner("Chameau", 1420, 1100, 1100,"pace", color="orange",
                skills=[
 
+                ]),
+        Runner("Lilith", 1420, 1100, 1100,"late", color="orange",
+                       skills=[
+        
+                        ]),
 
-                ])
+        Runner("Berserk", 1420, 1100, 1100,"end", color="orange",
+                       skills=[
+        
+                        ])  
 
-
-
-
-
-            
     ]
 
-
 #ajouter start_heading = 0/90/180 etc
-
-
-
-
-
-
-
 
 nakayama_2000 = Circuit(
     name="Satsuki Sho",

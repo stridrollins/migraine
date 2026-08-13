@@ -4,6 +4,13 @@ from trackbuilder import *
 from factories import *
 from runner import *
 from skills import *
+EARLY_RACE = 0
+MID_RACE = 1/3 
+LATE_RACE = 2/3
+LAST_SPURT = 5/6
+
+
+
 
 DEFAULT_SPEED = 60
 DEFAULT_DEAD_SPEED = 50
@@ -17,6 +24,38 @@ UPHILL_HP_FACTOR = 0.1
 DOWNHILL_SPEED_FACTOR = 0.05
 DOWNHILL_ACCEL_FACTOR = 0.1
 DOWNHILL_HP_FACTOR = -0.2
+
+MAX_EQUALIZED_SPEED = 40
+
+FR_HP_FACTOR = 1.15
+FR_START_ACCEL_FACTOR =1.2
+FR_TARGET_SPEED_1=1.000
+FR_TARGET_SPEED_2=1.001
+FR_TARGET_FAILED=0.95
+FR_SPRINT_SPEED_FACTOR = 0.995
+
+
+PC_HP_FACTOR = 1.05
+PC_START_ACCEL_FACTOR = 1.05
+PC_TARGET_SPEED_1= 0.999
+PC_TARGET_SPEED_2= 1.000
+PC_TARGET_SPEED_3= 1.001
+PC_SPRINT_SPEED_FACTOR = 1
+
+LS_HP_FACTOR = 0.95
+LS_START_ACCEL_FACTOR = 0.98
+LS_TARGET_SPEED_1= 0.999
+LS_TARGET_SPEED_2= 1.000
+LS_TARGET_SPEED_3= 1.001
+LS_SPRINT_SPEED_FACTOR = 1.005
+
+EC_HP_FACTOR = 0.85
+EC_START_ACCEL_FACTOR = 0.90
+EC_TARGET_SPEED_1= 0.999
+EC_TARGET_SPEED_2= 1.000
+EC_SPRINT_SPEED_FACTOR = 1.01
+
+
 
 
 
@@ -50,7 +89,9 @@ class Course:
             if not runner.finished:
                 runner.previous_distance = runner.distance
 
-
+        ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)   
+        for position, runner in enumerate(ranking, start=1):
+            runner.position = position
 
         for runner in self.runners:
             if runner.finished:
@@ -59,7 +100,7 @@ class Course:
 
             runner.update_skills(self, dt)
             current_speed=self.calculate_speed(runner,dt)
-
+         
 
 
 
@@ -85,14 +126,14 @@ class Course:
 
             runner.update_skills(self, dt)
 
-        ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)   
-
+        
     def calculate_speed(self,runner,dt):
 
         target_speed,acceleration,hp_drain =self._get_base_speed(runner,dt)
         target_speed=self._get_corner_target(runner,target_speed,acceleration)
         target_speed=self._smooth_target_speed(runner,target_speed,dt)
         target_speed,acceleration, hp_drain = self._get_hill_target(runner,target_speed,acceleration,hp_drain)
+        target_speed,acceleration, hp_drain = self._get_style_speed(runner,target_speed,acceleration,hp_drain)
         self._update_current_speed(runner,target_speed,acceleration,dt)
         self._hp_drain(runner,hp_drain)
         return runner.current_speed
@@ -172,6 +213,103 @@ class Course:
         TARGET_SPEED_SMOOTHING=3.0
         runner.target_speed+=(target_speed-runner.target_speed)*TARGET_SPEED_SMOOTHING*dt
         return runner.target_speed
+
+
+    def _get_style_speed(self,runner,target_speed, acceleration,hp_drain):
+        length = self.circuit.length
+        nb_runners = len(self.runners)
+
+
+        if runner.style=="escape":
+            pass
+
+        if runner.style=="front":
+            hp_drain*=FR_HP_FACTOR
+            if runner.distance < length*30/100:
+                if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
+                    acceleration *= FR_START_ACCEL_FACTOR
+
+            elif runner.distance > length*(MID_RACE) and runner.distance< length*(LATE_RACE):
+                if runner.name=="Strid":
+                    print(runner.position)
+                if runner.position == 1:
+                    target_speed *= FR_TARGET_SPEED_1 #FR -> Front Runner
+                elif runner.position >= 1 and runner.position <= 4:
+                    target_speed *= FR_TARGET_SPEED_2
+                elif runner.position >= 5:
+                    target_speed *= FR_TARGET_FAILED 
+
+            elif runner.distance >= length*(LATE_RACE):
+                target_speed = target_speed*FR_SPRINT_SPEED_FACTOR
+            
+        if runner.style=="pace":
+          
+            hp_drain *= PC_HP_FACTOR
+
+            # Début : économie d'énergie
+            if runner.distance < length*30/100:
+                if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
+                    acceleration *= PC_START_ACCEL_FACTOR
+
+            # Milieu : accélération progressive
+            elif runner.distance > length * MID_RACE and runner.distance < length * LATE_RACE:
+                if runner.position <=  nb_runners*0.15 :
+                    target_speed *= PC_TARGET_SPEED_1
+                elif runner.position <= nb_runners*0.5 and runner.position > nb_runners*0.15:
+                    target_speed *= PC_TARGET_SPEED_2
+                elif runner.position > nb_runners > 0.5:
+                    target_speed *= PC_TARGET_SPEED_3
+
+            # Fin : sprint modéré
+            elif runner.distance >= length * LATE_RACE:
+                target_speed *= PC_SPRINT_SPEED_FACTOR
+
+
+
+
+
+
+
+
+
+        if runner.style=="late":
+            hp_drain *= LS_HP_FACTOR
+            if runner.distance < length*30/100:
+                if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
+                    acceleration *= LS_START_ACCEL_FACTOR
+
+            elif runner.distance > length * MID_RACE and runner.distance < length * LATE_RACE:
+                if runner.position <=  nb_runners*0.5 :
+                    target_speed *= LS_TARGET_SPEED_1
+                elif runner.position >= nb_runners*0.5 and runner.position <= nb_runners*0.8:
+                    target_speed *= LS_TARGET_SPEED_2
+                elif runner.position > nb_runners > 0.8:
+                    target_speed *= LS_TARGET_SPEED_3
+
+            elif runner.distance >= length * LATE_RACE:
+                target_speed *= LS_SPRINT_SPEED_FACTOR
+
+
+
+
+        
+        if runner.style=="end":
+            hp_drain *= EC_HP_FACTOR
+            if runner.distance < length*30/100:
+                if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
+                    acceleration *= EC_START_ACCEL_FACTOR
+
+            elif runner.distance < length * MID_RACE and runner.distance < length * LATE_RACE:
+                if runner.position <=  nb_runners*0.8 :
+                    target_speed *= EC_TARGET_SPEED_1
+                elif runner.position >= nb_runners*0.8:
+                    target_speed *= EC_TARGET_SPEED_2
+            elif runner.distance >= length * LATE_RACE:
+                target_speed *= EC_SPRINT_SPEED_FACTOR
+
+
+        return (target_speed,acceleration,hp_drain)
+
 
     def _update_current_speed(self,runner,target_speed,acceleration,dt):
         if runner.current_speed<target_speed:
