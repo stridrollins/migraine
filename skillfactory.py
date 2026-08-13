@@ -9,7 +9,7 @@ from skills import *
 
 
 
-#### VELOCITY ##########################################################
+### VELOCITY ##########################################################
 def corner_adept():
     return Skill(
         "Corner Adept",
@@ -27,7 +27,6 @@ def professor_of_curvature():
         [Velocity(0.5)],
         duration = 3.0
     )
-
 
 def straightaway_adept():
     return Skill(
@@ -55,6 +54,7 @@ def ramp_up():
         [Velocity(0.25)],
         duration = 3.0
     )
+
 def its_on():
     return Skill(
         "It's On",
@@ -131,6 +131,7 @@ def straight_descent():
         [Acceleration(0.2)],
         duration = 3.0
     )
+
 def determined_descent():
     return Skill(
         "Determined Descent",
@@ -141,7 +142,7 @@ def determined_descent():
     )
 ### RECOVERY #############################################################
 
-################################################################
+### UNIQUE #############################################################
 def moving_past_and_beyond():
     return Skill(
         "Moving Past, and Beyond",
