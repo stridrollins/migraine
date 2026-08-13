@@ -98,12 +98,18 @@ class Course:
         hp_drain=base_hp_drain
         
 #############=============================================================
-        for effect in runner.active_effects:
-            if isinstance(effect,Velocity):
-                target_speed = effect.skill_speed(target_speed)
-            if isinstance(effect,Acceleration):
-                target_accel = effect.skill_acceleration(target_accel)
-            
+        for skill in runner.skills:
+
+            if not skill.active:
+                continue
+
+            for effect in skill.effects:
+
+                if isinstance(effect, Velocity):
+                    target_speed = effect.skill_speed(target_speed)
+
+                elif isinstance(effect, Acceleration):
+                    target_accel = effect.skill_acceleration(target_accel)
         return (target_speed,target_accel,hp_drain)
 
     def _get_corner_target(self,runner,target_speed,acceleration):

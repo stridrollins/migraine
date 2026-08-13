@@ -1,30 +1,92 @@
 
 from dataclasses import dataclass, field
 from math import ceil, floor
+from typing import Literal
+
+
+SkillType = Literal["Standard","Rare","Unique","Inherited Unique"]
+
 
 @dataclass
 class Skill:
     name: str
+    type:SkillType
     trigger: SkillTrigger
     effects: list = field(default_factory=list)
+    duration: float = 0.0
     used: bool = False
+    remaining: float = 0.0
+    active: bool = False
 
     def check(self, course, runner):
-        return not self.used and self.trigger.check(course, runner)
+        return not self.used and not self.active and self.trigger.check(course, runner)
 
     def activate(self, course, runner):
         for effect in self.effects:
-            effect.apply( runner)
+            effect.apply(runner)
         self.used = True
+        self.active = True
+        self.remaining = self.duration
 
     def update(self, dt):
-        pass
+        if not self.active:
+            return
+
+        self.remaining -= dt
+
+        if self.remaining <= 0:
+            self.remaining = 0
+            self.active = False
 
 ####Triggers======================================================
 
 class SkillTrigger:
     def check(self,course,runner):
         raise NotImplementedError
+    def __and__(self, other):
+        return AndTrigger(self, other)
+
+    def __or__(self, other):
+        return OrTrigger(self, other)
+
+    def __invert__(self):
+        return NotTrigger(self)
+
+####Portes logiques =======================================
+
+class AndTrigger(SkillTrigger):
+
+    def __init__(self, *triggers):
+        self.triggers = triggers
+
+    def check(self, course, runner):
+        return all(
+            trigger.check(course, runner)
+            for trigger in self.triggers
+        )
+
+
+class OrTrigger(SkillTrigger):
+
+    def __init__(self, *triggers):
+        self.triggers = triggers
+
+    def check(self, course, runner):
+        return any(
+            trigger.check(course, runner)
+            for trigger in self.triggers
+        )
+
+
+class NotTrigger(SkillTrigger):
+
+    def __init__(self, trigger):
+        self.trigger = trigger
+
+    def check(self, course, runner):
+        return not self.trigger.check(course, runner)
+
+####Triggers de base=====================================================
 
 @dataclass
 class AfterDistanceTrigger(SkillTrigger):
@@ -88,10 +150,11 @@ class CornerTrigger(SkillTrigger):
 
 class StrightawayTrigger(SkillTrigger):
     def check(self, course, runner):
-        curve = course.track[runner.track_index].curvature
-        return curve == 0
+        return course.track[runner.track_index].curvature == 0
 
-
+class FinalCornerTrigger(SkillTrigger):
+    def check(self,course,runner):
+        return course.track[runner.track_index].is_final_corner
 
 
 
@@ -102,37 +165,23 @@ class Effect:
     def apply(self,target):
         raise NotImplementedError
 
-    def update(self,target,dt):
-        pass
-    @property
-    def expired(self):
-        return self.duration <= 0
+
+
 
 @dataclass 
 class Velocity(Effect):
     amount:float
-    duration:float
-    def update(self,target,dt):
-        self.duration -= dt
-    @property
-    def expired(self):
-        return self.duration <= 0
+
     def apply(self,target):
-        target.active_effects.append(self)
+        pass
     def skill_speed(self,speed):
         return speed + self.amount
 
 @dataclass 
 class Acceleration(Effect):
     amount:float
-    duration:float
-    def update(self,target,dt):
-        self.duration -= dt
-    @property
-    def expired(self):
-        return self.duration <= 0
     def apply(self,target):
-        target.active_effects.append(self)
+        pass
     def skill_acceleration(self,accel):
         return accel + self.amount
     

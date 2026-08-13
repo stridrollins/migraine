@@ -5,6 +5,7 @@ from math import sin, cos, pi, radians
 STEP = 2.0
 
 
+
 @dataclass
 class Straight:
     length: float
@@ -22,17 +23,15 @@ class Arc:
     is_final_corner:bool =False
 
 
-
-
-
 Geometry = Straight | Arc 
 
 @dataclass
 class Circuit:
     name: str
     track:str
+    
     geometry: list[Geometry]
-    gradient: float = 0.0
+    start_heading : float = pi/2
     length: float = 0
 
 
@@ -43,6 +42,7 @@ class TrackPoint:
     heading: float
     gradient: float
     curvature: float
+    is_final_corner: bool = False
 
 
 
@@ -53,7 +53,7 @@ class TrackBuilder:
         x = 0.0
         y = 0.0
 
-        heading = radians(90)
+        heading = circuit.start_heading
 
         distance = 0
 
@@ -87,7 +87,7 @@ class TrackBuilder:
 
             elif isinstance(part, Arc):
 
-                direction = 1 if part.clockwise else -1
+                direction = -1 if part.clockwise else 1
 
                 arc = radians(part.angle)
                 gradient = part.gradient
@@ -119,8 +119,9 @@ class TrackBuilder:
                             x=x,
                             y=y,
                             heading=heading,
-                            gradient=0,
-                            curvature=1 / part.radius
+                            gradient=gradient,
+                            curvature=1 / part.radius,
+                            is_final_corner=part.is_final_corner
                         )
                     )
 

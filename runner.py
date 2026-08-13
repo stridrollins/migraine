@@ -1,8 +1,10 @@
 from skills import Skill
 
 class Runner:
-    def __init__(self, name,speed,power,stamina, skills = None):
+    def __init__(self, name,speed,power,stamina, color="white", skills = None):
         self.name = name
+        self.color = color
+
         self.position = 0
         self.speed = speed
         self.power = power
@@ -22,21 +24,26 @@ class Runner:
         self.hp  = self.stamina
         self.hp_drain = 0
         self.total_hp_drain = 0
-
-        self.active_effects =[]
-        
+    
 
     def update_skills(self, course, dt):
-        for skill in self.skills:
-            if skill.check(course, self):
-                skill.activate(course, self)
-            skill.update(dt)
-        for effect in self.active_effects:
-            effect.update(self, dt)
 
-            # Suppression des effets terminés
-        self.active_effects = [
-            effect
-            for effect in self.active_effects
-            if not effect.expired
-        ]
+            # ==========================================
+            # Activation des skills
+            # ==========================================
+
+            for skill in self.skills:
+
+                if skill.check(course, self):
+
+                    skill.activate(course, self)
+
+                skill.update(dt)
+
+    def get_active_skills(self):
+                return [
+                    (skill, skill.remaining)
+                    for skill in self.skills
+                    if skill.active
+                ]
+

@@ -6,14 +6,34 @@ from trackbuilder import *
 
 def create_runners():
     return [
-        Runner("A",1450,1250,1100,skills=[stamina_recovery()]),
-        Runner("B",1450,1250,1100,skills=[straight_descent()])
+        Runner("Strid",1450,1250,1100,color="Cyan",
+               skills=[moving_past_and_beyond()
+
+
+
+
+                       ]),
+
+        Runner("Lilith",1450,1280,1100,color="Pink",
+               skills=[speed_star(),fast_paced()
+                   
+               ])
     ]
+
+
+#ajouter start_heading = 0/90/180 etc
+
+
+
+
+
+
 
 
 nakayama_2000 = Circuit(
     name="Satsuki Sho",
     track="Nakayama 2000m",
+    start_heading= -pi /2,
     geometry=[
         Straight(124),
         Arc(1,100, 180, True),
@@ -24,14 +44,16 @@ nakayama_2000 = Circuit(
         Straight(150),
         Arc(4,120, 31, True),
         Straight(140),
-        Arc(5,100, 139, True, 0.0, True),
+        Arc(5,100, 139, True, 0.0, is_final_corner=True),
         Straight(250)
     ]
 )
 
+
 tokyo_2400 = Circuit(
     name="Japanese Derby",
     track="Tokyo 2400m",
+    start_heading= -pi /2,
     geometry=[
 
         Straight(356),
@@ -41,7 +63,7 @@ tokyo_2400 = Circuit(
         Straight(476),
 
         Arc(3,200, 85, False),
-        Arc(4,150, 95, False),
+        Arc(4,150, 95, False, is_final_corner=True),
         Straight(200, 2.0),
 
         Straight(280)
@@ -50,6 +72,7 @@ tokyo_2400 = Circuit(
 kyoto_3000 = Circuit(
     name="Kikuka Sho",
     track="Kyoto 3000m",
+    start_heading=-pi /2 + (15*pi/90),
     geometry=[
 
         
@@ -68,7 +91,7 @@ kyoto_3000 = Circuit(
        
         Arc(4,110,95,True),
         Straight(120,-1.5),
-        Arc(5,110,100,True),
+        Arc(5,110,100,True, is_final_corner=True),
         Straight(460),
 
 
@@ -77,6 +100,7 @@ kyoto_3000 = Circuit(
 hanshin_2200 = Circuit(
     name="Takarazuka Kinen",
     track="Hanshin 2200m",
+    start_heading=-pi/2,
     geometry=[
 
         Straight(295,-1.0),
@@ -87,7 +111,7 @@ hanshin_2200 = Circuit(
         Straight(348),
 	    Arc(3,170,75,True),
         Arc(4,280,25,True),
-        Arc(5,145,95,True),
+        Arc(5,145,95,True, is_final_corner=True),
         Straight(160,-1.0),
         Straight(125,1.0),
         Straight(83)
@@ -97,6 +121,7 @@ hanshin_2200 = Circuit(
 laumamusume2 = Circuit(
     name="Lauma Musume Track N°2",
     track = "Nod-Krai Teappot",
+    start_heading=pi/2,
     geometry = [
         Straight(10),
         Arc(1,15,20,True),
@@ -125,7 +150,7 @@ laumamusume2 = Circuit(
         Straight(35),
         Arc(13,8,50,False),
         Straight(15),
-        Arc(14,20,17,True),
+        Arc(14,20,17,True, is_final_corner=True),
         Straight(10)
     ]
 )
@@ -169,17 +194,3 @@ def create_courses():
             create_runners()
         )
     ]
-
-def create_uphill_adept():
-    return Skill (name="Uphill Adept", trigger=UphillTrigger(), 
-                  effects =[Velocity(amount=50,duration=50)])
-
-def create_corner_adept():
-    return Skill (name="Uphill Adept", trigger=CornerTrigger(), 
-                  effects =[Velocity(amount=50,duration=50)])
-
-
-SKILLS = {
-    "uphill_adept":create_uphill_adept,
-    "corner_adept":create_corner_adept
-}
