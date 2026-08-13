@@ -1,7 +1,7 @@
 from skills import Skill
 
 class Runner:
-    def __init__(self, name,speed,power,stamina, color="white", skills = None):
+    def __init__(self, name,speed,power,stamina,style, color="white", skills = None):
         self.name = name
         self.color = color
 
@@ -9,14 +9,20 @@ class Runner:
         self.speed = speed
         self.power = power
         self.stamina = stamina
-
+        self.style = style
         self.skills = skills or []
 
         self.distance = 0
+        self.previous_distance = 0
         self.track_index =0
         self.x =0
         self.y =0
         self.finished = False
+
+        self.overtakes = 0
+        self.overtaken = 0
+        self.overtakes_this_frame = 0
+        self.overtaken_this_frame = 0
 
         self.current_speed = 0
         self.target_speed = 0

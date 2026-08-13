@@ -50,7 +50,7 @@ def ramp_up():
     return Skill(
         "Ramp Up",
         "Standard",
-        None,
+        OvertakingTrigger(1),
         [Velocity(0.25)],
         duration = 3.0
     )
@@ -59,9 +59,9 @@ def its_on():
     return Skill(
         "It's On",
         "Rare",
-        None,
+        OvertakingTrigger(1),
         [Velocity(0.5)],
-        duration = 3.5
+        duration = 8.5
     )
 
 def homestretch_haste():

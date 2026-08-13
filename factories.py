@@ -6,33 +6,20 @@ from trackbuilder import *
 
 def create_runners():
     return [
-        Runner("Strid",1450,1250,1100,color="cyan",
-               skills=[moving_past_and_beyond()]),
+        Runner("Strid",1520,1100,1100,"end",color="cyan",
+               skills=[
 
-        Runner("Chameau", 1420, 1200, 750, color="orange",
-               skills=[professor_of_curvature(), 
-                       determined_descent(), 
-                       beeline_burst()
-
-
-                       ]
-               ),
-
-
-
-        Runner("Lilith",1450,1280,1100,color="pink",
-               skills=[speed_star(),
-                       fast_paced()
-                
+                   
                ]),
 
-        Runner("Berserk",1350,1350,1100,color="green",
-                       skills=[speed_star(),
-                               in_body_and_mind(),
-                               fast_paced(),
-                               homestretch_haste()
-                        
-                       ])
+        Runner("Chameau", 1420, 1200, 750,"pace", color="orange",
+               skills=[
+
+
+                ])
+
+
+
 
 
             

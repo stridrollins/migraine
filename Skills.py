@@ -156,7 +156,18 @@ class FinalCornerTrigger(SkillTrigger):
     def check(self,course,runner):
         return course.track[runner.track_index].is_final_corner
 
+@dataclass
+class OvertakingTrigger(SkillTrigger):
+    target : int
+    counters: dict = field(default_factory=dict)
 
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.counters:
+            self.counters[runner_id] = 0
+
+        self.counters[runner_id] += runner.overtakes_this_frame
+        return self.counters[runner_id] >= self.target
 
     
 ####Effects==================================================================

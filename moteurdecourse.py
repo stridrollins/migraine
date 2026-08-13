@@ -44,12 +44,25 @@ class Course:
 
     def update(self,dt):
         self.time+=dt
+
+
+        for runner in self.runners:
+            if not runner.finished:
+                runner.previous_distance = runner.distance
+
+
+
         for runner in self.runners:
             if runner.finished:
                 continue
-            runner.update_skills(self, dt)
 
+
+            runner.update_skills(self, dt)
             current_speed=self.calculate_speed(runner,dt)
+
+
+
+
             speed_ms=current_speed/3.6
             runner.distance+=speed_ms*dt
             runner.track_index=min(int(runner.distance/STEP),len(self.track)-1)
@@ -62,6 +75,15 @@ class Course:
                 runner.distance=self.circuit.length
                 runner.finished=True
                 self.results.append((len(self.results)+1,runner,self.time))
+
+        self.update_overtakes()
+
+        for runner in self.runners:
+
+            if runner.finished:
+                continue
+
+            runner.update_skills(self, dt)
 
         ranking=sorted(self.runners,key=lambda r:r.distance,reverse=True)   
 
@@ -165,3 +187,27 @@ class Course:
     def _hp_drain(self,runner,hp_drain):
         runner.hp -= hp_drain
         runner.total_hp_drain = hp_drain
+
+    def update_overtakes(self):
+        for runner in self.runners:
+            runner.overtakes_this_frame = 0
+
+        for runner in self.runners:
+            for other in self.runners:
+                if runner is other:
+                    continue
+
+                was_behind = (
+                    runner.previous_distance < other.previous_distance)
+                is_now_ahead =(
+                    runner.distance > other.distance
+                )
+                if was_behind and is_now_ahead:
+                    runner.overtakes_this_frame +=1
+
+                elif (
+                runner.previous_distance > other.previous_distance
+                and runner.distance < other.distance
+                ):
+                    runner.overtaken += 1
+                    runner.overtaken_this_frame += 1
