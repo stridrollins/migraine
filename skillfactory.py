@@ -1,6 +1,5 @@
 from skills import *
 
-#To do : Ramp up & it's on overtake trigger
 
 
 EARLY_RACE = 0
