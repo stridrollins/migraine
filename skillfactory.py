@@ -26,7 +26,7 @@ def professor_of_curvature():
         "Professor of Curvature",
         "Rare",
         RandomCornerTrigger(MID_RACE,LATE_RACE),
-        [Velocity(1)],
+        [Velocity(10)],
         duration = 3.0
     )
 
@@ -154,4 +154,11 @@ def moving_past_and_beyond():
         duration = 3.0
     )
 
-
+def angling_and_scheming():
+    return Skill(
+        "Angling and Scheming",
+        "Unique",
+        AfterDistanceTrigger(LATE_RACE) & CornerTrigger() & BeforePositionTrigger(1),
+        [Acceleration(0.4)],
+        duration = 3.0
+    )

@@ -103,15 +103,6 @@ class TrackVisualizer:
 
         
 
-
-
-
-
-
-
-
-
-
     def draw_ui(self):
     ####zones ==================================
         self.canvas.create_rectangle(
@@ -161,8 +152,6 @@ class TrackVisualizer:
             height=HEIGHT - 20
         )
 
-
-        
     #### leaderboards =============================
         self.ranking_text = self.canvas.create_text(
                 WIDTH*0.01,
@@ -180,6 +169,7 @@ class TrackVisualizer:
                 font=("Courier", 12),
                 text=""
             )
+        
     def create_skill_card(self, runner, skill, remaining):
 
         card = tk.Frame(
@@ -469,13 +459,21 @@ class TrackVisualizer:
                 runner.distance /
                 self.course.circuit.length
             ) * 100
+            if position < len(ranking):
+                next_runner = ranking[position]
+                gap = next_runner.distance - runner.distance
+            else:
+                next_runner = None
+                gap = 0
+
             classement += (
                 f"{position}. "
                 f"{runner.name:<10} | "
                 f"{runner.distance:7.1f}m "
                 f"({progress:5.1f}%) | "
-                f"{runner.current_speed:5.1f} km/h | "
-                f"{runner.hp:.0f} HP"
+                #f"{runner.current_speed:5.1f} km/h | "
+                #f"{runner.hp:.0f} HP | "
+                f"Ecart : {gap:7.1f}"
                 
                 #f"{self.course.track[runner.track_index].curvature}"
                 f"\n"

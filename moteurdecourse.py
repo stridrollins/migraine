@@ -33,8 +33,7 @@ MAX_EQUALIZED_SPEED = 40
 GE_HP_FACTOR = 1.35
 GE_START_ACCEL_FACTOR =1.40
 GE_TARGET_SPEED_1=1.040
-GE_TARGET_SPEED_2=1.100
-GE_TARGET_SPEED_3=1.150
+
 GE_SPRINT_SPEED_FACTOR = 0.900
 
 
@@ -42,29 +41,26 @@ GE_SPRINT_SPEED_FACTOR = 0.900
 FR_HP_FACTOR = 1.15
 FR_START_ACCEL_FACTOR =1.25
 FR_TARGET_SPEED_1=1.000
-FR_TARGET_SPEED_2=1.001
-FR_TARGET_SPEED_3=1.005
+
 FR_SPRINT_SPEED_FACTOR = 0.995
 
 
 PC_HP_FACTOR = 1.05
 PC_START_ACCEL_FACTOR = 1.10
-PC_TARGET_SPEED_1= 0.999
-PC_TARGET_SPEED_2= 1.000
-PC_TARGET_SPEED_3= 1.001
+PC_TARGET_SPEED_1= 1.000
+
 PC_SPRINT_SPEED_FACTOR = 1
 
 LS_HP_FACTOR = 0.95
 LS_START_ACCEL_FACTOR = 1.00
 LS_TARGET_SPEED_1= 0.999
-LS_TARGET_SPEED_2= 1.000
-LS_TARGET_SPEED_3= 1.001
+
 LS_SPRINT_SPEED_FACTOR = 1.005
 
 EC_HP_FACTOR = 0.85
 EC_START_ACCEL_FACTOR = 0.90
 EC_TARGET_SPEED_1= 0.999
-EC_TARGET_SPEED_2= 1.000
+
 EC_SPRINT_SPEED_FACTOR = 1.01
 
 
@@ -210,13 +206,16 @@ class Course:
     def calculate_speed(self,runner,dt):
 
         target_speed,acceleration,hp_drain =self._get_base_speed(runner,dt)
-        target_speed=self._get_corner_target(runner,target_speed,acceleration)
+        target_speed,acceleration,hp_drain=self._get_natural_speed(runner,target_speed,acceleration,hp_drain)
+        target_speed = self._get_skill_speed(runner,target_speed)
+
         target_speed=self._smooth_target_speed(runner,target_speed,dt)
-        target_speed,acceleration, hp_drain = self._get_hill_target(runner,target_speed,acceleration,hp_drain)
-        target_speed,acceleration, hp_drain = self._get_style_speed(runner,target_speed,acceleration,hp_drain)
+
         self._update_current_speed(runner,target_speed,acceleration,dt)
         self._hp_drain(runner,hp_drain)
         return runner.current_speed
+
+
 
     def _get_base_speed(self,runner,dt):
 ###formules====================================================
@@ -235,21 +234,18 @@ class Course:
                 target_speed= sprint_speed
             else:
                 target_speed=normal_speed
-####Power=================================================================
-        target_accel = base_accel
-####Stamina ================================================================
-        hp_drain=base_hp_drain
-        
-#############=============================================================
-        for skill in runner.skills:
-            if not skill.active:
-                continue
-            for effect in skill.effects:
-                if isinstance(effect, Velocity):
-                    target_speed = effect.skill_speed(target_speed)
-                elif isinstance(effect, Acceleration):
-                    target_accel = effect.skill_acceleration(target_accel)
-        return (target_speed,target_accel,hp_drain)
+
+        return target_speed,base_accel,base_hp_drain
+
+    def _get_natural_speed(self,runner,target_speed,acceleration,hp_drain):
+        target_speed = self._get_corner_target(runner,target_speed,acceleration)
+        target_speed,acceleration,hp_drain = self._get_hill_target(runner,target_speed,acceleration,hp_drain)
+        target_speed,acceleration,hp_drain = self._get_style_speed(runner,target_speed,acceleration,hp_drain)
+        return target_speed,acceleration,hp_drain
+
+
+
+
 
     def _get_corner_target(self,runner,target_speed,acceleration):
         current_index = runner.track_index
@@ -293,22 +289,6 @@ class Course:
         runner.target_speed+=(target_speed-runner.target_speed)*TARGET_SPEED_SMOOTHING*dt
         return runner.target_speed
 
-    def get_style_position(self, runner):
-        other_runners = [
-            r for r in self.runners
-            if r is not runner
-            and not r.finished
-            and r.style != runner.style
-        ]
-
-        runners_ahead = sum(
-            1 for r in other_runners
-            if r.distance > runner.distance
-        )
-
-        return runners_ahead + 1
-
-    
     def _get_style_speed(self,runner,target_speed, acceleration,hp_drain):
     
 
@@ -320,12 +300,8 @@ class Course:
                 if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
                     acceleration *= GE_START_ACCEL_FACTOR
             
-                if runner.position == 1:
-                    target_speed *= GE_TARGET_SPEED_1 #FR -> Front Runner
-                elif runner.position >= 1 and runner.position <= 2:
-                    target_speed *= GE_TARGET_SPEED_2
-                elif runner.position >= 2:
-                    target_speed *= GE_TARGET_SPEED_3
+                target_speed *= GE_TARGET_SPEED_1 #FR -> Front Runner
+
             elif runner.distance >= self.late_race:
                 target_speed = target_speed*GE_SPRINT_SPEED_FACTOR
        
@@ -339,12 +315,8 @@ class Course:
                 if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
                     acceleration *= FR_START_ACCEL_FACTOR
           
-                if runner.position == 1:
-                    target_speed *= FR_TARGET_SPEED_1 #FR -> Front Runner
-                elif runner.position >= 1 and runner.position <= 4:
-                    target_speed *= FR_TARGET_SPEED_2
-                elif runner.position >= 5:
-                    target_speed *= FR_TARGET_SPEED_3
+                target_speed *= FR_TARGET_SPEED_1 #FR -> Front Runner
+
             elif runner.distance >= self.late_race:
                 target_speed = target_speed*FR_SPRINT_SPEED_FACTOR
             
@@ -354,12 +326,8 @@ class Course:
                 if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
                     acceleration *= PC_START_ACCEL_FACTOR
            
-                if runner.position <=  self.runner_count*0.15 :
-                    target_speed *= PC_TARGET_SPEED_1
-                elif runner.position <= self.runner_count*0.5 and runner.position > self.runner_count*0.15:
-                    target_speed *= PC_TARGET_SPEED_2
-                elif runner.position > self.runner_count * 0.5:
-                    target_speed *= PC_TARGET_SPEED_3
+                target_speed *= PC_TARGET_SPEED_1
+    
             elif runner.distance >= self.late_race:
                 target_speed *= PC_SPRINT_SPEED_FACTOR
 
@@ -369,12 +337,8 @@ class Course:
                 if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
                     acceleration *= LS_START_ACCEL_FACTOR
 
-                if runner.position <=  self.runner_count*0.5 :
-                    target_speed *= LS_TARGET_SPEED_1
-                elif runner.position >= self.runner_count*0.5 and runner.position <= self.runner_count*0.8:
-                    target_speed *= LS_TARGET_SPEED_2
-                elif runner.position > self.runner_count * 0.8:
-                    target_speed *= LS_TARGET_SPEED_3
+                target_speed *= LS_TARGET_SPEED_1
+
             elif runner.distance >= self.late_race:
                 target_speed *= LS_SPRINT_SPEED_FACTOR
 
@@ -384,10 +348,8 @@ class Course:
                 if runner.current_speed > MAX_EQUALIZED_SPEED and runner.current_speed < target_speed:
                     acceleration *= EC_START_ACCEL_FACTOR
  
-                if runner.position <=  self.runner_count*0.8 :
-                    target_speed *= EC_TARGET_SPEED_1
-                elif runner.position >= self.runner_count*0.8:
-                    target_speed *= EC_TARGET_SPEED_2
+                target_speed *= EC_TARGET_SPEED_1
+
             elif runner.distance >= self.late_race:
                 target_speed *= EC_SPRINT_SPEED_FACTOR
 
@@ -403,4 +365,21 @@ class Course:
     def _hp_drain(self,runner,hp_drain):
         runner.hp -= hp_drain
         runner.total_hp_drain = hp_drain
+
+
+    def _get_skill_speed(self, runner, target_speed):
+
+        skill_bonus = 0
+
+        for skill in runner.skills:
+
+            if not skill.active:
+                continue
+
+            for effect in skill.effects:
+
+                if isinstance(effect, Velocity):
+                    skill_bonus += effect.amount
+
+        return target_speed + skill_bonus
 

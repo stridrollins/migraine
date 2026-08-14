@@ -11,18 +11,18 @@ def create_runners():
         Runner(
                     "1",
                     1420, 1100, 11000,
-                    "pace",
+                    "front",
                     color="cyan",
                     skills=[
-              
+                        angling_and_scheming()
                     ]
                 ),
         Runner(
                     "2",
                     1420, 1100, 11000,
                     "pace",
-                    color="cyan",
-                    skills=[professor_of_curvature()
+                    color="purple",
+                    skills=[moving_past_and_beyond()
     
                     ]
                 ),
