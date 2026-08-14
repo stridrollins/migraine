@@ -1,17 +1,13 @@
 from dataclasses import dataclass
 from math import sin, cos, pi, radians
 
-
 STEP = 2.0
-
-
 
 @dataclass
 class Straight:
     length: float
     gradient: float = 0.0
     is_final_straight:bool = False
-
 
 @dataclass
 class Arc:
@@ -21,8 +17,7 @@ class Arc:
     clockwise: bool
     gradient: float = 0.0
     is_final_corner:bool =False
-
-
+    
 Geometry = Straight | Arc 
 
 @dataclass
@@ -33,7 +28,6 @@ class Circuit:
     geometry: list[Geometry]
     start_heading : float = pi/2
     length: float = 0
-
 
 @dataclass
 class TrackPoint:

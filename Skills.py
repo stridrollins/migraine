@@ -2,8 +2,9 @@
 from dataclasses import dataclass, field
 from math import ceil, floor
 from typing import Literal
+from trackbuilder import STEP
 
-
+from random import *
 SkillType = Literal["Standard","Rare","Unique","Inherited Unique"]
 
 
@@ -93,14 +94,14 @@ class AfterDistanceTrigger(SkillTrigger):
     percentage: float
 
     def check(self,course,runner):
-        return runner.distance >= course.circuit.length * (self.percentage/100)
+        return runner.distance >= course.circuit.length * (self.percentage)
 
 @dataclass
 class BeforeDistanceTrigger(SkillTrigger):
     percentage: float
 
     def check(self,course,runner):
-        return runner.distance <= course.circuit.length * (self.percentage/100)
+        return runner.distance <= course.circuit.length * (self.percentage)
 
 @dataclass
 class BetweenDistanceTrigger(SkillTrigger):
@@ -108,7 +109,7 @@ class BetweenDistanceTrigger(SkillTrigger):
     p2: float
 
     def check(self,course,runner):
-        return runner.distance <= course.circuit.length * (self.p2/100) and runner.distance >= course.circuit.length * (self.p1/100)
+        return runner.distance <= course.circuit.length * (self.p2) and runner.distance >= course.circuit.length * (self.p1)
 
 @dataclass
 class BeforePositionTrigger(SkillTrigger):
@@ -156,6 +157,113 @@ class FinalCornerTrigger(SkillTrigger):
     def check(self,course,runner):
         return course.track[runner.track_index].is_final_corner
 
+class GreatEscapeTrigger(SkillTrigger):
+    def checkk(self,course,runner):
+        return runner.style=="escape"
+
+class FrontRunnerTrigger(SkillTrigger):
+    def check(self,course,runner):
+        return runner.style=="front" or runner.style=="escape"
+
+class PaceChaserTrigger(SkillTrigger):
+    def check(self,course,runner):
+        return runner.style=="pace"
+
+class LateSurgherTrigger(SkillTrigger):
+    def check(self,course,runner):
+        return runner.style=="late"
+
+class EndCloserTrigger(SkillTrigger):
+    def check(self,course,runner):
+        return runner.style=="end"
+    
+####triggers aleatoires=================================================
+@dataclass
+class RandomCornerTrigger(SkillTrigger):
+    p1:float =0
+    p2:float =1
+    targets:dict = field(default_factory=dict)
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.targets:
+            min_distance = course.length * (self.p1)
+            max_distance = course.length * (self.p2)
+            eligible_points = [
+                index
+                for index in course.corner_points
+                if min_distance <= index * STEP <= max_distance
+            ]
+            if not eligible_points:
+                return False
+            self.targets[runner_id] = choice(eligible_points)
+        target = self.targets[runner_id]
+
+        return runner.track_index >= target
+
+@dataclass
+class RandomStraightawayTrigger(SkillTrigger):
+    p1:float =0
+    p2:float =1
+    targets:dict = field(default_factory=dict)
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.targets:
+            min_distance = course.length * (self.p1)
+            max_distance = course.length * (self.p2)
+            eligible_points = [
+                index
+                for index in course.straightaway_points
+                if min_distance <= index * STEP <= max_distance
+            ]
+            if not eligible_points:
+                return False
+            self.targets[runner_id] = choice(eligible_points)
+        target = self.targets[runner_id]
+        return runner.track_index >= target
+
+@dataclass
+class RandomUphillTrigger(SkillTrigger):
+    p1:float =0
+    p2:float =1
+    targets:dict = field(default_factory=dict)
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.targets:
+            min_distance = course.length * (self.p1)
+            max_distance = course.length * (self.p2)
+            eligible_points = [
+                index
+                for index in course.uphill_points
+                if min_distance <= index * STEP <= max_distance
+            ]
+            if not eligible_points:
+                return False
+            self.targets[runner_id] = choice(eligible_points)
+        target = self.targets[runner_id]
+        return runner.track_index >= target
+
+@dataclass
+class RandomDownhillTrigger(SkillTrigger):
+    p1:float =0
+    p2:float =1
+    targets:dict = field(default_factory=dict)
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.targets:
+            min_distance = course.length * (self.p1)
+            max_distance = course.length * (self.p2)
+            eligible_points = [
+                index
+                for index in course.downhill_points
+                if min_distance <= index * STEP <= max_distance
+            ]
+            if not eligible_points:
+                return False
+            self.targets[runner_id] = choice(eligible_points)
+        target = self.targets[runner_id]
+        return runner.track_index >= target
+#####triggers compliqués ===============================
+
 @dataclass
 class OvertakingTrigger(SkillTrigger):
     target : int
@@ -169,6 +277,18 @@ class OvertakingTrigger(SkillTrigger):
         self.counters[runner_id] += runner.overtakes_this_frame
         return self.counters[runner_id] >= self.target
 
+@dataclass
+class OvertakenTrigger(SkillTrigger):
+    target : int
+    counters: dict = field(default_factory=dict)
+
+    def check(self,course,runner):
+        runner_id = id(runner)
+        if runner_id not in self.counters:
+            self.counters[runner_id] = 0
+
+        self.counters[runner_id] += runner.overtaken_this_frame
+        return self.counters[runner_id] >= self.target
     
 ####Effects==================================================================
 

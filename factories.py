@@ -6,26 +6,30 @@ from trackbuilder import *
 
 def create_runners():
     return [
-        Runner("Strid",1420,1100,1100,"front",color="cyan",
-               skills=[
 
-               ]),
-
-        Runner("Chameau", 1420, 1100, 1100,"pace", color="orange",
-               skills=[
-
-                ]),
-        Runner("Lilith", 1420, 1100, 1100,"late", color="orange",
-                       skills=[
-        
-                        ]),
-
-        Runner("Berserk", 1420, 1100, 1100,"end", color="orange",
-                       skills=[
-        
-                        ])  
+ 
+        Runner(
+                    "1",
+                    1420, 1100, 11000,
+                    "pace",
+                    color="cyan",
+                    skills=[
+              
+                    ]
+                ),
+        Runner(
+                    "2",
+                    1420, 1100, 11000,
+                    "pace",
+                    color="cyan",
+                    skills=[professor_of_curvature()
+    
+                    ]
+                ),
+      
 
     ]
+
 
 #ajouter start_heading = 0/90/180 etc
 
