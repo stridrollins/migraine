@@ -19,6 +19,9 @@ class Runner:
         self.y =0
         self.finished = False
 
+        self.diff_infront = 0
+        self.diff_behind = 0
+
         self.overtakes = 0
         self.overtaken = 0
         self.overtakes_this_frame = 0

@@ -53,13 +53,13 @@ PC_SPRINT_SPEED_FACTOR = 1
 
 LS_HP_FACTOR = 0.95
 LS_START_ACCEL_FACTOR = 1.00
-LS_TARGET_SPEED_1= 0.999
+LS_TARGET_SPEED_1= 1.000
 
 LS_SPRINT_SPEED_FACTOR = 1.005
 
 EC_HP_FACTOR = 0.85
 EC_START_ACCEL_FACTOR = 0.90
-EC_TARGET_SPEED_1= 0.999
+EC_TARGET_SPEED_1= 1.000
 
 EC_SPRINT_SPEED_FACTOR = 1.01
 
@@ -162,7 +162,7 @@ class Course:
         for runner in self.runners:
             if runner.finished:
                 continue
-            runner.update_skills(self, dt)
+            
             current_speed=self.calculate_speed(runner,dt)
         
 
@@ -179,13 +179,21 @@ class Course:
                 runner.finished=True
                 self.results.append((len(self.results)+1,runner,self.time))
 
+            
+
         ranking = sorted(
             self.runners,
             key=lambda r: r.distance,
             reverse=True
         )
 
-        for position, runner in enumerate(ranking, 1):
+            
+
+
+        for index,runner in enumerate(ranking):
+
+            position = index +1
+
             old_position = previous_positions[runner]
 
             runner.position = position
@@ -198,7 +206,22 @@ class Course:
             if runner.overtaken_this_frame:
                 runner.overtaken += runner.overtaken_this_frame
 
-        
+            if index > 0:
+                runner.diff_infront = ranking[index-1].distance - runner.distance 
+            else: 
+                runner.diff_infront = 0
+
+            if index < len(ranking) - 1:
+                runner.diff_behind = runner.distance - ranking[index+1].distance
+            else: 
+                runner.diff_behind = 0
+
+
+        for runner in self.runners:
+            if not runner.finished:
+
+                runner.update_skills(self, dt)
+            
 
         
 
@@ -207,7 +230,7 @@ class Course:
 
         target_speed,acceleration,hp_drain =self._get_base_speed(runner,dt)
         target_speed,acceleration,hp_drain=self._get_natural_speed(runner,target_speed,acceleration,hp_drain)
-        target_speed = self._get_skill_speed(runner,target_speed)
+        target_speed,acceleration = self._get_skill_effects(runner,target_speed,acceleration)
 
         target_speed=self._smooth_target_speed(runner,target_speed,dt)
 
@@ -367,9 +390,10 @@ class Course:
         runner.total_hp_drain = hp_drain
 
 
-    def _get_skill_speed(self, runner, target_speed):
+    def _get_skill_effects(self, runner, target_speed, acceleration):
 
-        skill_bonus = 0
+        skill_speed_bonus = 0
+        skill_accel_bonus = 0
 
         for skill in runner.skills:
 
@@ -379,7 +403,12 @@ class Course:
             for effect in skill.effects:
 
                 if isinstance(effect, Velocity):
-                    skill_bonus += effect.amount
-
-        return target_speed + skill_bonus
+                    skill_speed_bonus += effect.amount
+                elif isinstance(effect, Acceleration):
+                    skill_accel_bonus += effect.amount
+                    print(acceleration, skill_accel_bonus)
+        target_speed += skill_speed_bonus
+        acceleration += skill_accel_bonus
+        
+        return target_speed,acceleration
 

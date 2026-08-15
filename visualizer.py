@@ -414,7 +414,7 @@ class TrackVisualizer:
                     10
                 )
 
-        # Supprimer les skills terminés
+        #Supprimer les skills terminés
         for key in list(self.skill_cards):
 
             if key not in active_skills:
@@ -459,21 +459,18 @@ class TrackVisualizer:
                 runner.distance /
                 self.course.circuit.length
             ) * 100
-            if position < len(ranking):
-                next_runner = ranking[position]
-                gap = next_runner.distance - runner.distance
-            else:
-                next_runner = None
-                gap = 0
+
+            gap=[]
+
 
             classement += (
                 f"{position}. "
                 f"{runner.name:<10} | "
-                f"{runner.distance:7.1f}m "
-                f"({progress:5.1f}%) | "
-                #f"{runner.current_speed:5.1f} km/h | "
+                f"{runner.distance:.1f}m "
+                f"({progress:.1f}%) | "
+                f"{runner.current_speed:.1f} km/h | "
                 #f"{runner.hp:.0f} HP | "
-                f"Ecart : {gap:7.1f}"
+                f"Ecart:{runner.diff_infront:.1f}m"
                 
                 #f"{self.course.track[runner.track_index].curvature}"
                 f"\n"

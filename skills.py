@@ -116,7 +116,8 @@ class BeforePositionTrigger(SkillTrigger):
     percentage: float
 
     def check(self,course,runner):
-        return runner.position <= ceil(len(course.runners) * (self.percentage/100))
+        position_start = (runner.position - 1) *100 / course.runner_count
+        return position_start <= self.percentage
 
 
 @dataclass
@@ -124,7 +125,8 @@ class AfterPositionTrigger(SkillTrigger):
     percentage: float
 
     def check(self,course,runner):
-        return runner.position >= floor(len(course.runners) * (self.percentage/100))
+        position_end = runner.position *100 / course.runner_count
+        return position_end >= self.percentage
 
 @dataclass
 class BetweenPositionTrigger(SkillTrigger):
@@ -132,7 +134,31 @@ class BetweenPositionTrigger(SkillTrigger):
     p2: float
 
     def check(self,course,runner):
-        return runner.position >= floor(len(course.runners) * (self.p1/100)) and runner.position <= ceil(len(course.runners) * (self.p2/100))
+        
+        position_start = (runner.position - 1) *100 / course.runner_count
+        position_end = runner.position * 100 / course.runner_count
+        
+        return (position_start <= self.p2 and position_end >= self.p1)
+#####ECART ENTRE LES RUNNERS : par defaut, proc quand l'ecart est inferieur a la valeur requise
+@dataclass
+class DiffInFrontTrigger(SkillTrigger):
+    distance:float
+    def check(self,course,runner):
+        return runner.diff_infront <= self.distance
+
+@dataclass
+class DiffBehindTrigger(SkillTrigger):
+    distance:float
+    def check(self,course,runner):
+        return runner.diff_behind <= self.distance
+
+
+
+
+
+
+
+
 
 class UphillTrigger(SkillTrigger):
     def check(self, course, runner):
@@ -169,7 +195,7 @@ class PaceChaserTrigger(SkillTrigger):
     def check(self,course,runner):
         return runner.style=="pace"
 
-class LateSurgherTrigger(SkillTrigger):
+class LateSurgerTrigger(SkillTrigger):
     def check(self,course,runner):
         return runner.style=="late"
 
@@ -266,7 +292,7 @@ class RandomDownhillTrigger(SkillTrigger):
 
 @dataclass
 class OvertakingTrigger(SkillTrigger):
-    target : int
+    target : int = 1
     counters: dict = field(default_factory=dict)
 
     def check(self,course,runner):
@@ -279,7 +305,7 @@ class OvertakingTrigger(SkillTrigger):
 
 @dataclass
 class OvertakenTrigger(SkillTrigger):
-    target : int
+    target : int = 1
     counters: dict = field(default_factory=dict)
 
     def check(self,course,runner):

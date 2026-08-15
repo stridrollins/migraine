@@ -63,7 +63,7 @@ def its_on():
         "Rare",
         AfterDistanceTrigger(MID_RACE) & OvertakingTrigger(1),
         [Velocity(1)],
-        duration = 8.5
+        duration = 3.0
     )
 
 def homestretch_haste():
@@ -72,7 +72,7 @@ def homestretch_haste():
         "Standard",
         AfterDistanceTrigger(LAST_SPURT) & StrightawayTrigger(),
         [Velocity(0.5)],
-        duration = 3.5
+        duration = 3.0
 
     )
 
@@ -82,7 +82,7 @@ def in_body_and_mind():
         "Rare",
         AfterDistanceTrigger(LAST_SPURT) & StrightawayTrigger(),
         [Velocity(1)],
-        duration = 3.5
+        duration = 3.0
 
     )
 
@@ -90,7 +90,7 @@ def fast_paced():
     return Skill(
         "Fast Paced",
         "Standard",
-        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
+        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE) & BeforePositionTrigger(50),
         [Velocity(0.5)],
         duration = 3.0
     )
@@ -99,7 +99,7 @@ def escape_artist():
     return Skill(
         "Escape Artist",
         "Rare",
-        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE),
+        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE) & BeforePositionTrigger(50),
         [Velocity(1)],
         duration = 3.0
     )
@@ -122,6 +122,68 @@ def speed_star():
         duration = 3.0
     )
 
+def position_pilfer():
+    return Skill(
+        "Position Pilfer",
+        "Standard",
+        LateSurgerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE) & AfterPositionTrigger(50),
+        [Velocity(0.5)],
+        duration = 3.0
+    )
+
+def fast_and_furious():
+    return Skill(
+        "Fast & Furious",
+        "Rare",
+        LateSurgerTrigger() & BetweenDistanceTrigger(MID_RACE,LATE_RACE) & AfterPositionTrigger(50), 
+        [Velocity(1)],
+        duration = 3.0
+    )
+
+def outer_swell():
+    return Skill(
+        "Outer Swell",
+        "Standard",
+        LateSurgerTrigger() & FinalCornerTrigger() & OvertakingTrigger(),
+        [Velocity(0.5)],
+        duration = 3.0
+
+    )
+
+def rising_dragon():
+    return Skill(
+        "Rising Dragon",
+        "Rare",
+        LateSurgerTrigger() & FinalCornerTrigger() & OvertakingTrigger(),
+        [Velocity(1)],
+        duration = 3.0
+
+    )
+
+def masterful_gambit():
+    return Skill(
+        "Masterful Gambit",
+        "Standard",
+        EndCloserTrigger() & AfterDistanceTrigger(LAST_SPURT)
+    )
+
+def steadfast():
+    return Skill(
+        "Steadfast",
+        "Standard",
+        FinalCornerTrigger() & DiffBehindTrigger(1)
+        [Velocity(0.5),Acceleration(0.1)]
+    )
+
+
+def unyielding():
+    return Skill(
+        "Nope",
+        "Rare",
+        FinalCornerTrigger() & DiffBehindTrigger(1),
+        [Velocity(1), Acceleration(0.2)],
+        duration = 50.0
+    )
 
 
 ### ACCEL #############################################################
@@ -150,7 +212,7 @@ def moving_past_and_beyond():
         "Moving Past, and Beyond",
         "Unique",
         AfterDistanceTrigger(LATE_RACE) & CornerTrigger() & BetweenPositionTrigger(60,75),
-        [Acceleration(0.4)],
+        [Acceleration(40)],
         duration = 3.0
     )
 

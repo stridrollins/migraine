@@ -14,7 +14,7 @@ def create_runners():
                     "front",
                     color="cyan",
                     skills=[
-                        angling_and_scheming()
+                        
                     ]
                 ),
         Runner(
@@ -22,10 +22,12 @@ def create_runners():
                     1420, 1100, 11000,
                     "pace",
                     color="purple",
-                    skills=[moving_past_and_beyond()
+                    skills=[
+                
     
                     ]
-                ),
+                )
+        
       
 
     ]
