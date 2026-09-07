@@ -60,7 +60,7 @@ class TrackVisualizer:
         self.root.title(course.circuit.name)
         self.return_to_selection = False
         self.root.protocol("WM_DELETE_WINDOW", self.close)
-
+        self.ui_timer=0
 
         self.canvas = tk.Canvas(
             self.root,
@@ -76,7 +76,6 @@ class TrackVisualizer:
             font=("Arial", 14),
             command=self.return_to_menu
         )
-
 
         self.return_button.pack(pady=10)
         self.draw_ui()
@@ -185,7 +184,6 @@ class TrackVisualizer:
             pady=5
         )
 
-        # Nom du runner
         runner_label = tk.Label(
             card,
             text=runner.name,
@@ -199,7 +197,6 @@ class TrackVisualizer:
             pady=(5, 0)
         )
 
-        # Ligne skill + temps
         skill_line = tk.Frame(
             card,
             bg="#332f2f"
@@ -209,7 +206,6 @@ class TrackVisualizer:
             padx=8
         )
 
-        # Nom du skill
         skill_label = tk.Label(
             skill_line,
             text=skill.name,
@@ -221,7 +217,6 @@ class TrackVisualizer:
             side="left"
         )
 
-        # Temps restant
         time_label = tk.Label(
             skill_line,
             text=f"{remaining:.1f}s",
@@ -233,7 +228,6 @@ class TrackVisualizer:
             side="right"
         )
 
-        # Barre de progression
         progress = tk.Canvas(
             card,
             height=10,
@@ -260,14 +254,14 @@ class TrackVisualizer:
             "time_label": time_label,
             "progress": progress,
             "bar": bar,
-            "duration": skill.duration,
+
+            # Durée réelle du skill : conservée uniquement
+            # pour les informations/progressions éventuelles
+            "duration": skill.duration if skill.duration != 0 else 5.0,
             "runner_color": runner.color,
             "animating": True,
-
-
+            "created_at": self.course.time
         }
-
-
         
     def prepare_scale(self): # = taille
         xs = [p.x for p in self.course.track]
@@ -349,31 +343,37 @@ class TrackVisualizer:
                 x + 4,
                 y + 4
             )
+        self.ui_timer += 1
+        if self.ui_timer>=3:
 
-        self.update_skill_display()
+            self.update_skill_display()
 
 
-        self.update_ranking()
-        self.update_results()
+            self.update_ranking()
+            self.update_results()
+            self.ui_timer = 0
+        
+            
+
 
         if self.course.finished:
             self.return_button.pack(pady=10)
-        else:
-            self.root.after(16, self.update)
-
+        
 
 
     def update_skill_display(self):
 
-        active_skills = set()
+        current_time = self.course.time
+
+        # ==========================================
+        # Créer les cartes des nouveaux skills
+        # ==========================================
 
         for runner in self.course.runners:
 
             for skill, remaining in runner.get_active_skills():
-                remaining = skill.remaining
-                key = (id(runner), id(skill))
 
-                active_skills.add(key)
+                key = (id(runner), id(skill))
 
                 if key not in self.skill_cards:
 
@@ -387,22 +387,38 @@ class TrackVisualizer:
 
                     self.animate_skill_in(card)
 
+        # ==========================================
+        # Mise à jour / suppression des cartes
+        # ==========================================
 
-                card = self.skill_cards[key]
+        for key in list(self.skill_cards):
 
-                card["time_label"].config(
-                    text=f"{remaining:.1f}s"
+            card = self.skill_cards[key]
+
+            elapsed = current_time - card["created_at"]
+
+            # ------------------------------------------
+            # Skill encore affiché
+            # ------------------------------------------
+
+            if elapsed < card["duration"]:
+
+                remaining_display = (
+                    card["duration"] - elapsed
                 )
 
-                duration = card["duration"]
+                card["time_label"].config(
+                    text=f"{remaining_display:.1f}s"
+                )
 
-                if duration > 0:
-                    ratio = max(
-                        0,
-                        min(1, remaining / duration)
+                # Progression de l'affichage
+                ratio = max(
+                    0,
+                    min(
+                        1,
+                        remaining_display / card["duration"]
                     )
-                else:
-                    ratio = 0
+                )
 
                 width = card["progress"].winfo_width()
 
@@ -414,16 +430,19 @@ class TrackVisualizer:
                     10
                 )
 
-        #Supprimer les skills terminés
-        for key in list(self.skill_cards):
+            # ------------------------------------------
+            # Temps d'affichage écoulé
+            # ------------------------------------------
 
-            if key not in active_skills:
-
-                card = self.skill_cards.pop(key)
+            else:
 
                 card["frame"].destroy()
+                self.skill_cards.pop(key)
 
+        # ==========================================
         # Affichage de la pile
+        # ==========================================
+
         self.update_skill_stack()
 
 
@@ -469,7 +488,7 @@ class TrackVisualizer:
                 f"{runner.distance:.1f}m "
                 f"({progress:.1f}%) | "
                 f"{runner.current_speed:.1f} km/h | "
-                #f"{runner.hp:.0f} HP | "
+                f"{runner.hp:.0f} HP | "
                 f"Ecart:{runner.diff_infront:.1f}m"
                 
                 #f"{self.course.track[runner.track_index].curvature}"

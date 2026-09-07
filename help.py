@@ -7,10 +7,18 @@ else:
 
 
 #skill template
+
 def ():
     return Skill(
         "",
+        "Standard",
+        ,
+        []
+    )
+def ():
+    return Skill(
         "",
+        "Rare",
         ,
         []
     )

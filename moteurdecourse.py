@@ -23,12 +23,13 @@ CURVATURE_SPEED_DRAIN=3.0
 UPHILL_SPEED_FACTOR = -0.1
 UPHILL_ACCEL_FACTOR = -0.2
 UPHILL_HP_FACTOR = 0.1
+
 DOWNHILL_SPEED_FACTOR = 0.05
 DOWNHILL_ACCEL_FACTOR = 0.1
 DOWNHILL_HP_FACTOR = -0.2
 
-MAX_EQUALIZED_SPEED = 40
-
+MAX_EQUALIZED_SPEED = 50
+START_ACCEL_FACTOR = 3
 
 GE_HP_FACTOR = 1.35
 GE_START_ACCEL_FACTOR =1.40
@@ -142,9 +143,12 @@ class Course:
         self.checkfinish()
 
     def checkfinish(self): 
-        if len(self.results)==len(self.runners):
-            self.finished=True
 
+
+        self.finished = all(
+            runner.finished
+            for runner in self.runners
+        )
 
 
     def update(self,dt):
@@ -247,16 +251,19 @@ class Course:
         normal_speed=DEFAULT_SPEED*0.9+(runner.speed/20)*0.1
         base_accel = DEFAULT_ACCEL*runner.power/1000
         base_hp_drain = (runner.current_speed*DEFAULT_HP_DRAIN)*dt + (runner.current_speed*runner.hp_drain)*dt
-
-
 ####Speed===============================================================
         if runner.hp<=0:
+
             target_speed = dead_speed
         else:
             if runner.distance>=self.length*2/3:
                 target_speed= sprint_speed
             else:
                 target_speed=normal_speed
+
+####Accel===============================================================
+        if runner.current_speed < MAX_EQUALIZED_SPEED:
+            base_accel *= START_ACCEL_FACTOR
 
         return target_speed,base_accel,base_hp_drain
 
@@ -406,7 +413,7 @@ class Course:
                     skill_speed_bonus += effect.amount
                 elif isinstance(effect, Acceleration):
                     skill_accel_bonus += effect.amount
-                    print(acceleration, skill_accel_bonus)
+                
         target_speed += skill_speed_bonus
         acceleration += skill_accel_bonus
         
