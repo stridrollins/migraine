@@ -10,17 +10,17 @@ MID_RACE = 33.333333
 LATE_RACE = 66.666667
 LAST_SPURT = 83.333333
 
-WEAK_SPEED = 0.2
-STANDARD_SPEED = 0.5
-RARE_SPEED = 1
+WEAK_SPEED = 0.5
+STANDARD_SPEED = 1
+RARE_SPEED = 2
 
-WEAK_ACCELERATION = 0.1
-STANDARD_ACCELERATION = 0.2
-RARE_ACCELERATION = 0.4
+WEAK_ACCELERATION = 0.2
+STANDARD_ACCELERATION = 0.4
+RARE_ACCELERATION = 0.8
 
-WEAK_RECOVERY = 10
-STANDARD_RECOVERY = 25
-RARE_RECOVERY = 100
+WEAK_RECOVERY = 25
+STANDARD_RECOVERY = 50
+RARE_RECOVERY = 200
 
 UNIQUE_SPEED = 2.5
 UNIQUE_ACCELERATION = 1
@@ -118,7 +118,7 @@ def fast_paced():
     return Skill(
         "Fast Paced",
         "Standard",
-        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE, LATE_RACE) & BeforePositionTrigger(50),
+        FrontRunnerTrigger() & MidRaceTrigger() & BeforePositionTrigger(50),
         [Velocity(STANDARD_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -128,7 +128,7 @@ def escape_artist():
     return Skill(
         "Escape Artist",
         "Rare",
-        FrontRunnerTrigger() & BetweenDistanceTrigger(MID_RACE, LATE_RACE) & BeforePositionTrigger(50),
+        FrontRunnerTrigger() & MidRaceTrigger() & BeforePositionTrigger(50),
         [Velocity(RARE_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -178,7 +178,7 @@ def position_pilfer():
     return Skill(
         "Position Pilfer",
         "Standard",
-        LateSurgerTrigger() & BetweenDistanceTrigger(MID_RACE, LATE_RACE) & AfterPositionTrigger(50),
+        LateSurgerTrigger() & MidRaceTrigger() & AfterPositionTrigger(50),
         [Velocity(STANDARD_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -188,7 +188,7 @@ def fast_and_furious():
     return Skill(
         "Fast & Furious",
         "Rare",
-        LateSurgerTrigger() & BetweenDistanceTrigger(MID_RACE, LATE_RACE) & AfterPositionTrigger(50),
+        LateSurgerTrigger() & MidRaceTrigger() & AfterPositionTrigger(50),
         [Velocity(RARE_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -278,7 +278,7 @@ def up_tempo():
     return Skill(
         "Up-Tempo",
         "Standard",
-        BetweenDistanceTrigger(MID_RACE, LATE_RACE),
+        MidRaceTrigger(),
         [Velocity(STANDARD_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -288,7 +288,7 @@ def killer_tunes():
     return Skill(
         "Killer Tunes",
         "Rare",
-        BetweenDistanceTrigger(MID_RACE, LATE_RACE),
+        MidRaceTrigger(),
         [Velocity(RARE_SPEED)],
         duration=STANDARD_DURATION
     )
@@ -733,7 +733,7 @@ def preferred_position():
     return Skill(
         "Preferred Position",
         "Standard",
-        PaceChaserTrigger() & BeforePositionTrigger(50) & RandomBetweenDistanceTrigger(MID_RACE, LATE_RACE),
+        PaceChaserTrigger() & BeforePositionTrigger(50) & MidRaceTrigger(),
         [Recovery(STANDARD_RECOVERY)]
     )
 
@@ -742,7 +742,7 @@ def race_planner():
     return Skill(
         "Race Planner",
         "Rare",
-        PaceChaserTrigger() & BeforePositionTrigger(50) & RandomBetweenDistanceTrigger(MID_RACE, LATE_RACE),
+        PaceChaserTrigger() & BeforePositionTrigger(50) & MidRaceTrigger(),
         [Recovery(RARE_RECOVERY)]
     )
 

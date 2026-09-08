@@ -105,19 +105,19 @@ class MeterDistanceRemainingTrigger(SkillTrigger):
 
 class EarlyRaceTrigger(SkillTrigger):
     def check(self,course,runner):
-        return BeforeDistanceTrigger(MID_RACE).check(course,runner)
+        return RandomBeforeDistanceTrigger(MID_RACE).check(course,runner)
 
 class MidRaceTrigger(SkillTrigger):
     def check(self,course,runner):
-        return BeforeDistanceTrigger(LATE_RACE).check(course,runner) and AfterDistanceTrigger(MID_RACE).check(course,runner)
+        return RandomBetweenDistanceTrigger(MID_RACE,LATE_RACE).check(course,runner)
 
 class LateRaceTrigger(SkillTrigger):
     def check(self,course,runner):
-        return AfterDistanceTrigger(LATE_RACE).check(course,runner)
+        return RandomAfterDistanceTrigger(LATE_RACE).check(course,runner)
 
 class LastSpurtTrigger(SkillTrigger):
     def check(self,course,runner):
-        return AfterDistanceTrigger(LAST_SPURT).check(course,runner)
+        return RandomAfterDistanceTrigger(LAST_SPURT).check(course,runner)
 
 
 @dataclass
@@ -197,6 +197,8 @@ class EndCloserTrigger(SkillTrigger):
 class RandomAfterDistanceTrigger(SkillTrigger):
     percentage:int
     targets:dict = field(default_factory=dict)
+
+    
     def check(self,course,runner):
         runner_id = id(runner)
         if runner_id not in self.targets:
@@ -239,12 +241,9 @@ class RandomBetweenDistanceTrigger(SkillTrigger):
                 self.percent1,
                 self.percent2
             )
-
-        target = self.targets[runner_id]
-
+        target = self.targets[runner_id] 
+        print(target)
         return AfterDistanceTrigger(target).check(course, runner)
-
-
 
 @dataclass
 class RandomCornerTrigger(SkillTrigger):
@@ -265,7 +264,7 @@ class RandomCornerTrigger(SkillTrigger):
                 return False
             self.targets[runner_id] = choice(eligible_points)
         target = self.targets[runner_id]
-
+        
         return runner.track_index >= target
 
 @dataclass

@@ -10,7 +10,7 @@ def create_runners():
  
         Runner(
                     "Strid",
-                    1600, 1300, 600,
+                    1680, 1100, 660,
                     "late",
                     color="#00ffff",
                     skills=[
@@ -21,82 +21,6 @@ def create_runners():
                         late_corners(),
                         on_your_left()
                         
-                    ]
-                ),
-        Runner(
-                    "Chameau",
-                    1400, 1000, 1100,
-                    "end",
-                    color="orange",
-                    skills=[
-                        #sonata_of_chamellerie(),
-                        end_corners(),
-                        daring_strike(),
-                        masterful_gambit(),
-                        encroaching_shadow(),
-                        homestretch_haste(),
-                        go_home_specialist()
-                       
-    
-                    ]
-                ),
-        Runner(
-                    "Sanhiro",
-                    1700, 1250, 550,
-                    "late",
-                    color="#5555ff",
-                    skills=[
-                        late_straightaways(),
-                        rising_dragon(),
-                        latch_on(),
-                        its_on(),
-                        position_pilfer(),
-                        lie_in_wait()
-    
-                    ]
-                ),
-        Runner(
-                        "Berserk",
-                        1450, 1370, 780,
-                        "pace",
-                        color="#009900",
-                        skills=[
-                            steady_gait(),
-                            killer_tunes(),
-                            all_ive_got(),
-                            race_planner(),
-                            head_on(),
-                            speed_star()
-        
-                        ]
-                    ),
-Runner(
-                    "Lilith",
-                    1780, 1100, 620,
-                    "front",
-                    color="#ffaaff",
-                    skills=[
-                        front_straightaways(),
-                        escape_artist(),
-                        triple_7s(),
-                        top_runner(),
-                        productive_plan(),
-                        taking_the_lead()
-    
-                    ]
-                ),
-Runner(
-                    "Rogue",
-                    1600, 1050, 850,
-                    "pace",
-                    color="#0033ff",
-                    skills=[
-                        pace_corners(),
-                        come_what_may(),
-                        corner_adept(),
-                        swinging_maestro(),
-                        highlander(),
-                        determined_descent()
                     ]
                 )
     ]

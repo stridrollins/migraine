@@ -35,6 +35,10 @@ class Runner:
         self.total_hp_drain = 0
     
 
+
+
+
+
     def update_skills(self, course, dt):
 
             # ==========================================
@@ -44,7 +48,6 @@ class Runner:
             for skill in self.skills:
 
                 if skill.check(course, self):
-
                     skill.activate(course, self)
 
                 skill.update(dt)

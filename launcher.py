@@ -6,7 +6,7 @@ from moteurdecourse import *
 
 
 FIXED_DT = 1 / 60
-SPEED = 10.0
+SPEED = 3.0
 
 accumulator = 0
 last_time = time.perf_counter()
@@ -59,3 +59,12 @@ while True:
 
     if not visualizer.return_to_selection:
         break
+
+
+#strid : satsuki sho
+#rogue : derby
+#chameau : kikuka
+#rogue (faire gagner berserk avec ulti)
+#lilith: laumamusume, ibis summer dash
+
+#punis : berserk, sanhiro
